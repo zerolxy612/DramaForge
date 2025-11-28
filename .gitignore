@@ -1,0 +1,27 @@
+/node_modules
+/.next
+/out
+/artifacts
+/cache
+/coverage
+/.env
+/.env.local
+/.env.development.local
+/.env.test.local
+/.env.production.local
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+.DS_Store
+*.tsbuildinfo
+/.turbo
+/.idea
+/.vscode
+
+# Next.js build output in nested apps
+**/.next
+
+# Nested dependencies and build artifacts
+**/node_modules
+/contracts/artifacts
+/contracts/cache

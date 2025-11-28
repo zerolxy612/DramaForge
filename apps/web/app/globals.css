@@ -1,0 +1,401 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-dusk text-slate-50 antialiased;
+  overflow-x: hidden;
+}
+
+a {
+  @apply text-accent hover:text-white transition-colors;
+}
+
+.glass {
+  @apply bg-white/5 backdrop-blur-lg border border-white/10;
+}
+
+.grain {
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0);
+  background-size: 32px 32px;
+}
+
+.glow-ring {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 0 40px rgba(239, 68, 68, 0.35),
+    inset 0 0 40px rgba(255, 255, 255, 0.06);
+}
+
+.glass-veil {
+  backdrop-filter: blur(24px) saturate(140%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(229, 9, 20, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientShift 14s ease infinite;
+}
+
+.aurora {
+  position: absolute;
+  background: conic-gradient(from 120deg, rgba(229, 9, 20, 0.6), rgba(255, 255, 255, 0), rgba(229, 9, 20, 0.4), rgba(255, 255, 255, 0));
+  filter: blur(120px);
+  opacity: 0.55;
+  animation: auroraDance 18s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+.holo-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 140px 140px;
+  mask-image: radial-gradient(circle at 50% 50%, black, transparent 70%);
+  opacity: 0.45;
+  mix-blend-mode: screen;
+  animation: drift 32s linear infinite;
+}
+
+.shimmer {
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.02));
+  background-size: 200% 200%;
+  animation: shimmer 6s ease-in-out infinite;
+}
+
+.floating-card {
+  animation: float 10s ease-in-out infinite;
+}
+
+.pulse-glow {
+  animation: pulseGlow 8s ease-in-out infinite;
+}
+
+.noise {
+  position: relative;
+}
+
+.noise::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: -1px;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0);
+  background-size: 22px 22px;
+  opacity: 0.25;
+  mix-blend-mode: screen;
+}
+
+.card-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(130deg, rgba(255, 255, 255, 0.08), rgba(229, 9, 20, 0.12), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.card-shine:hover::after {
+  opacity: 1;
+}
+
+/* 3D Card Stack Effect */
+.card-stack-3d {
+  perspective: 1500px;
+  transform-style: preserve-3d;
+}
+
+.card-3d {
+  transform-style: preserve-3d;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
+}
+
+.card-stack-3d:hover .card-3d {
+  transform: translateZ(0) rotateY(0deg) rotateX(0deg) !important;
+}
+
+.card-stack-3d:hover .card-3d:nth-child(1) {
+  transform: translateX(-15%) translateZ(80px) rotateY(12deg) scale(0.95) !important;
+}
+
+.card-stack-3d:hover .card-3d:nth-child(2) {
+  transform: translateZ(40px) scale(0.98) !important;
+}
+
+.card-stack-3d:hover .card-3d:nth-child(3) {
+  transform: translateX(15%) translateZ(80px) rotateY(-12deg) scale(0.95) !important;
+}
+
+/* Scan Line Effect */
+.scan-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.scan-line::before {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(229, 9, 20, 0.3) 50%,
+    transparent
+  );
+  animation: scan 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Glitch Effect */
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+}
+
+.glitch::before {
+  animation: glitch-1 2.5s infinite;
+  color: #e50914;
+  z-index: -1;
+}
+
+.glitch::after {
+  animation: glitch-2 2.5s infinite;
+  color: #fff;
+  z-index: -2;
+}
+
+/* Particle Background */
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  background: radial-gradient(circle, rgba(229, 9, 20, 0.8), transparent);
+  border-radius: 50%;
+  animation: particle-float 20s infinite;
+  opacity: 0;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.7), rgba(229, 9, 20, 0.4), rgba(10, 10, 15, 0));
+  filter: blur(40px);
+  opacity: 0.65;
+  animation: pulseBlur 14s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes auroraDance {
+  0% {
+    transform: translate3d(-10%, -8%, 0) rotate(6deg) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, 12%, 0) rotate(-4deg) scale(1.08);
+  }
+  100% {
+    transform: translate3d(-10%, -8%, 0) rotate(6deg) scale(1);
+  }
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(24px, 18px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(1deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(-1deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.32);
+  }
+  50% {
+    box-shadow: 0 0 0 24px rgba(229, 9, 20, 0.02);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.32);
+  }
+}
+
+@keyframes pulseBlur {
+  0% {
+    transform: scale(0.96);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0.96);
+    opacity: 0.45;
+  }
+}
+
+@keyframes scan {
+  0% {
+    top: -100%;
+  }
+  50% {
+    top: 100%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+@keyframes glitch-1 {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+@keyframes glitch-2 {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(2px, -2px);
+  }
+  40% {
+    transform: translate(2px, 2px);
+  }
+  60% {
+    transform: translate(-2px, -2px);
+  }
+  80% {
+    transform: translate(-2px, 2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+@keyframes particle-float {
+  0% {
+    transform: translateY(100vh) translateX(0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(100px) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Scroll Reveal Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* Responsive 3D adjustments */
+@media (max-width: 768px) {
+  .card-stack-3d {
+    perspective: 1000px;
+  }
+
+  .card-stack-3d:hover .card-3d:nth-child(1) {
+    transform: translateX(-10%) translateZ(40px) rotateY(8deg) scale(0.96) !important;
+  }
+
+  .card-stack-3d:hover .card-3d:nth-child(3) {
+    transform: translateX(10%) translateZ(40px) rotateY(-8deg) scale(0.96) !important;
+  }
+}
