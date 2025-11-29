@@ -120,19 +120,19 @@ a {
 }
 
 .card-stack-3d:hover .card-3d {
-  transform: translateZ(0) rotateY(0deg) rotateX(0deg) !important;
+  transform: translateZ(0) rotateY(0deg) rotateX(0deg);
 }
 
 .card-stack-3d:hover .card-3d:nth-child(1) {
-  transform: translateX(-15%) translateZ(80px) rotateY(12deg) scale(0.95) !important;
+  transform: translateX(-15%) translateZ(80px) rotateY(12deg) scale(0.95);
 }
 
 .card-stack-3d:hover .card-3d:nth-child(2) {
-  transform: translateZ(40px) scale(0.98) !important;
+  transform: translateZ(40px) scale(0.98);
 }
 
 .card-stack-3d:hover .card-3d:nth-child(3) {
-  transform: translateX(15%) translateZ(80px) rotateY(-12deg) scale(0.95) !important;
+  transform: translateX(15%) translateZ(80px) rotateY(-12deg) scale(0.95);
 }
 
 /* Scan Line Effect */
@@ -385,6 +385,37 @@ a {
   animation: fadeInUp 0.8s ease-out forwards;
 }
 
+/* Performance-friendly fallbacks */
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  .floating-card,
+  .pulse-glow,
+  .aurora,
+  .orb,
+  .scan-line::before {
+    animation: none !important;
+  }
+
+  .floating-card {
+    transform: translateY(0) rotate(0);
+  }
+
+  .aurora,
+  .orb {
+    filter: blur(60px);
+    opacity: 0.45;
+  }
+
+  .card-stack-3d .card-3d {
+    transition: transform 0.35s ease, opacity 0.25s ease;
+  }
+
+  .glass,
+  .glass-veil {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(16px) saturate(120%);
+  }
+}
+
 /* Responsive 3D adjustments */
 @media (max-width: 768px) {
   .card-stack-3d {
@@ -392,10 +423,10 @@ a {
   }
 
   .card-stack-3d:hover .card-3d:nth-child(1) {
-    transform: translateX(-10%) translateZ(40px) rotateY(8deg) scale(0.96) !important;
+    transform: translateX(-10%) translateZ(40px) rotateY(8deg) scale(0.96);
   }
 
   .card-stack-3d:hover .card-3d:nth-child(3) {
-    transform: translateX(10%) translateZ(40px) rotateY(-8deg) scale(0.96) !important;
+    transform: translateX(10%) translateZ(40px) rotateY(-8deg) scale(0.96);
   }
 }

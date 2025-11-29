@@ -19,29 +19,40 @@ interface RotatingCardStackProps {
 }
 
 export function RotatingCardStack({ cards }: RotatingCardStackProps) {
-  const [activeCard, setActiveCard] = useState<string | null>(null);
+  const [pinnedCard, setPinnedCard] = useState<string | null>(null);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const activeCard = pinnedCard ?? hoveredCard;
 
   return (
     <div className="relative group card-stack-3d">
       <div className="absolute -inset-8 bg-gradient-to-br from-accent/30 via-transparent to-white/10 blur-3xl rounded-[40px] animate-pulse" />
-      <div className="absolute inset-0 rounded-[32px] border border-white/5" />
+      <div className="absolute inset-0 rounded-[32px] border border-white/5 pointer-events-none" />
       
       <div className="relative aspect-[10/16] max-w-[520px] mx-auto">
-        {cards.map((card, index) => (
+        {cards.map((card, index) => {
+          const isActive = activeCard === card.id;
+          const isDimmed = Boolean(activeCard && !isActive);
+          const imageOverlay = isActive
+            ? "bg-gradient-to-b from-black/0 via-black/20 to-black/60"
+            : "bg-gradient-to-b from-black/10 via-black/40 to-black/80";
+
+          return (
           <div
             key={card.id}
-            className={`card-3d absolute inset-0 origin-center transition-all duration-700 ease-out card-shine cursor-pointer ${
-              card.className || ""
-            }`}
+            className={`card-3d absolute inset-0 origin-center transition-all duration-700 ease-out card-shine cursor-pointer ${card.className || ""} ${
+              isActive ? "opacity-100 saturate-150" : ""
+            } ${isDimmed ? "opacity-60 saturate-75" : "opacity-100"}`}
             style={{
-              zIndex: activeCard === card.id ? 50 : 30 - index * 10,
-              transform: activeCard === card.id 
-                ? "translateZ(100px) scale(1.05)" 
+              zIndex: isActive ? 50 : 30 - index * 10,
+              transform: isActive
+                ? "translateZ(110px) scale(1.06)"
                 : undefined
             }}
-            onClick={() => setActiveCard(activeCard === card.id ? null : card.id)}
-            onMouseEnter={() => setActiveCard(card.id)}
-            onMouseLeave={() => setActiveCard(null)}
+            onClick={() =>
+              setPinnedCard((current) => (current === card.id ? null : card.id))
+            }
+            onMouseEnter={() => setHoveredCard(card.id)}
+            onMouseLeave={() => setHoveredCard(null)}
           >
             <div className="absolute -inset-[1px] rounded-[32px] bg-gradient-to-b from-white/10 via-white/0 to-accent/40 opacity-70 blur-lg" />
             
@@ -55,7 +66,7 @@ export function RotatingCardStack({ cards }: RotatingCardStackProps) {
                 priority={index === 0}
               />
               
-              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/80" />
+              <div className={`absolute inset-0 ${imageOverlay}`} />
               
               {/* Scan line effect */}
               <div className="scan-line absolute inset-0" />
@@ -99,9 +110,9 @@ export function RotatingCardStack({ cards }: RotatingCardStackProps) {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 }
-

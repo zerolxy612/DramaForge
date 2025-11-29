@@ -25,7 +25,7 @@ const heroCards = [
     mood: "Agent remix",
     stats: ["Mint-ready", "Split revenue"],
     cta: "Mint episode",
-    image: "/images/card%202.png",
+    image: "/images/Image.png",
     className: "z-20 rotate-[9deg] translate-x-8 translate-y-10 scale-[0.9] opacity-90"
   },
   {
@@ -35,7 +35,7 @@ const heroCards = [
     mood: "Neo noir",
     stats: ["Collectors · 1,240", "24h floor · 0.18"],
     cta: "View vault",
-    image: "/images/card%203.png",
+    image: "/images/Image.png",
     className: "z-10 rotate-[-14deg] -translate-x-10 translate-y-16 scale-[0.85] opacity-80"
   }
 ];

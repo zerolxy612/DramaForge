@@ -1,6 +1,42 @@
 export type Language = 'en' | 'zh-CN' | 'zh-TW';
 
 export interface LandingContent {
+  header: {
+    signIn: string;
+    protocol: string;
+    launchApp: string;
+  };
+  auth: {
+    signIn: {
+      title: string;
+      emailLabel: string;
+      emailPlaceholder: string;
+      passwordLabel: string;
+      passwordPlaceholder: string;
+      forgotPassword: string;
+      signInButton: string;
+      orDivider: string;
+      continueWithApple: string;
+      continueWithGoogle: string;
+      noAccount: string;
+      signUp: string;
+    };
+    signUp: {
+      title: string;
+      usernameLabel: string;
+      usernamePlaceholder: string;
+      emailLabel: string;
+      emailPlaceholder: string;
+      passwordLabel: string;
+      passwordPlaceholder: string;
+      continueButton: string;
+      orDivider: string;
+      continueWithApple: string;
+      continueWithGoogle: string;
+      haveAccount: string;
+      signIn: string;
+    };
+  };
   hero: {
     tagline: string;
     title: string;
@@ -90,6 +126,42 @@ export interface LandingContent {
 
 export const landingContent: Record<Language, LandingContent> = {
   'en': {
+    header: {
+      signIn: 'Sign In',
+      protocol: 'Protocol',
+      launchApp: 'Launch App',
+    },
+    auth: {
+      signIn: {
+        title: 'Sign In',
+        emailLabel: 'Email address',
+        emailPlaceholder: 'adelia.larsson@mail.com',
+        passwordLabel: 'Password',
+        passwordPlaceholder: '••••••',
+        forgotPassword: 'Forgot Password?',
+        signInButton: 'Sign In',
+        orDivider: 'OR',
+        continueWithApple: 'Continue with Apple',
+        continueWithGoogle: 'Continue with Google',
+        noAccount: "Don't have an account?",
+        signUp: 'Sign Up',
+      },
+      signUp: {
+        title: 'Create an Account',
+        usernameLabel: 'Username',
+        usernamePlaceholder: 'Adelia Larsson',
+        emailLabel: 'Email address',
+        emailPlaceholder: 'adelia.larsson@mail.com',
+        passwordLabel: 'Password',
+        passwordPlaceholder: '••••••••',
+        continueButton: 'Continue',
+        orDivider: 'OR',
+        continueWithApple: 'Continue with Apple',
+        continueWithGoogle: 'Continue with Google',
+        haveAccount: 'Already have an account?',
+        signIn: 'Sign In',
+      },
+    },
     hero: {
       tagline: 'Interactive Drama OS · x402 Protocol',
       title: 'Interactive Motion Manga',
@@ -159,7 +231,7 @@ export const landingContent: Record<Language, LandingContent> = {
     },
     chapters: {
       tag: 'Chapter rail',
-      title: 'Black, White & Red · Start Watching',
+      title: 'Interactive Drama · Start Watching',
       browseAll: 'Browse All →',
     },
     flow: {
@@ -192,6 +264,42 @@ export const landingContent: Record<Language, LandingContent> = {
     },
   },
   'zh-CN': {
+    header: {
+      signIn: '登录',
+      protocol: '协议',
+      launchApp: '启动应用',
+    },
+    auth: {
+      signIn: {
+        title: '登录',
+        emailLabel: '邮箱地址',
+        emailPlaceholder: 'adelia.larsson@mail.com',
+        passwordLabel: '密码',
+        passwordPlaceholder: '••••••',
+        forgotPassword: '忘记密码？',
+        signInButton: '登录',
+        orDivider: '或',
+        continueWithApple: '使用 Apple 继续',
+        continueWithGoogle: '使用 Google 继续',
+        noAccount: '还没有账号？',
+        signUp: '注册',
+      },
+      signUp: {
+        title: '创建账号',
+        usernameLabel: '用户名',
+        usernamePlaceholder: 'Adelia Larsson',
+        emailLabel: '邮箱地址',
+        emailPlaceholder: 'adelia.larsson@mail.com',
+        passwordLabel: '密码',
+        passwordPlaceholder: '••••••••',
+        continueButton: '继续',
+        orDivider: '或',
+        continueWithApple: '使用 Apple 继续',
+        continueWithGoogle: '使用 Google 继续',
+        haveAccount: '已有账号？',
+        signIn: '登录',
+      },
+    },
     hero: {
       tagline: '互动漫剧操作系统 · x402 协议',
       title: '互动漫剧',
@@ -261,7 +369,7 @@ export const landingContent: Record<Language, LandingContent> = {
     },
     chapters: {
       tag: '剧集列表',
-      title: '黑白红张力 · 立即开播',
+      title: '互动漫剧 · 立即开播',
       browseAll: '浏览全部 →',
     },
     flow: {
@@ -294,6 +402,42 @@ export const landingContent: Record<Language, LandingContent> = {
     },
   },
   'zh-TW': {
+    header: {
+      signIn: '登入',
+      protocol: '協議',
+      launchApp: '啟動應用',
+    },
+    auth: {
+      signIn: {
+        title: '登入',
+        emailLabel: '郵箱地址',
+        emailPlaceholder: 'adelia.larsson@mail.com',
+        passwordLabel: '密碼',
+        passwordPlaceholder: '••••••',
+        forgotPassword: '忘記密碼？',
+        signInButton: '登入',
+        orDivider: '或',
+        continueWithApple: '使用 Apple 繼續',
+        continueWithGoogle: '使用 Google 繼續',
+        noAccount: '還沒有帳號？',
+        signUp: '註冊',
+      },
+      signUp: {
+        title: '創建帳號',
+        usernameLabel: '用戶名',
+        usernamePlaceholder: 'Adelia Larsson',
+        emailLabel: '郵箱地址',
+        emailPlaceholder: 'adelia.larsson@mail.com',
+        passwordLabel: '密碼',
+        passwordPlaceholder: '••••••••',
+        continueButton: '繼續',
+        orDivider: '或',
+        continueWithApple: '使用 Apple 繼續',
+        continueWithGoogle: '使用 Google 繼續',
+        haveAccount: '已有帳號？',
+        signIn: '登入',
+      },
+    },
     hero: {
       tagline: '互動漫劇作業系統 · x402 協議',
       title: '互動漫劇',
@@ -363,7 +507,7 @@ export const landingContent: Record<Language, LandingContent> = {
     },
     chapters: {
       tag: '劇集列表',
-      title: '黑白紅張力 · 立即開播',
+      title: '互動漫劇 · 立即開播',
       browseAll: '瀏覽全部 →',
     },
     flow: {
