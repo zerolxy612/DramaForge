@@ -4,6 +4,10 @@ import Image from "next/image";
 import { ParticleBackground } from "./components/ParticleBackground";
 import { RotatingCardStack } from "./components/RotatingCardStack";
 import { ScrollReveal } from "./components/ScrollReveal";
+import { MagneticElement } from "./components/MagneticElement";
+import { TiltCard } from "./components/TiltCard";
+import { CountUp } from "./components/CountUp";
+import { FilmReel, FilmReelContainer } from "./components/FilmReel";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { getLandingContent } from "@/lib/i18n/landing";
 
@@ -71,15 +75,17 @@ export default function Home() {
         <section className="grid lg:grid-cols-[1.05fr_0.95fr] gap-12 items-center relative">
           <div className="space-y-7 relative">
             <div className="absolute -left-10 -top-12 h-28 w-28 rounded-full bg-gradient-to-br from-white/10 via-accent/30 to-transparent blur-2xl animate-pulse" />
-            <p className="text-xs uppercase tracking-[0.3em] text-accent">
+            <p className="text-xs uppercase tracking-[0.3em] text-accent shimmer-text">
               {content.hero.tagline}
             </p>
-            <h1 className="font-display text-4xl sm:text-5xl leading-tight text-white drop-shadow-[0_20px_70px_rgba(229,9,20,0.4)]">
-              {content.hero.title}
-              <span className="block text-accent mt-3 glitch" data-text={content.hero.subtitle}>
-                {content.hero.subtitle}
-              </span>
-            </h1>
+            <MagneticElement strength={0.1}>
+              <h1 className="font-display text-4xl sm:text-5xl leading-tight text-white drop-shadow-[0_20px_70px_rgba(229,9,20,0.4)]">
+                {content.hero.title}
+                <span className="block text-accent mt-3 glitch glow-pulse" data-text={content.hero.subtitle}>
+                  {content.hero.subtitle}
+                </span>
+              </h1>
+            </MagneticElement>
             <p className="text-lg text-white/80 max-w-2xl leading-relaxed">
               {content.hero.description}
             </p>
@@ -96,16 +102,22 @@ export default function Home() {
               </div>
             </div>
             <div className="flex flex-wrap gap-3">
-              <button className="relative px-5 py-3 rounded-full bg-gradient-to-r from-accent via-red-500 to-white text-white font-semibold shadow-[0_20px_60px_rgba(229,9,20,0.4)] hover:scale-[1.05] transition overflow-hidden">
-                <span className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.3),transparent_35%)] opacity-60" />
-                <span className="relative">{content.hero.cta.play}</span>
-              </button>
-              <button className="px-5 py-3 rounded-full border border-white/20 text-white/80 hover:border-accent hover:text-white hover:-translate-y-0.5 transition">
-                {content.hero.cta.whitepaper}
-              </button>
-              <button className="px-5 py-3 rounded-full bg-white/10 text-white/80 border border-white/15 hover:bg-white/20 hover:text-white transition">
-                {content.hero.cta.agentNode}
-              </button>
+              <MagneticElement strength={0.2}>
+                <button className="relative px-5 py-3 rounded-full bg-gradient-to-r from-accent via-red-500 to-white text-white font-semibold shadow-[0_20px_60px_rgba(229,9,20,0.4)] hover:scale-[1.05] transition overflow-hidden glow-pulse">
+                  <span className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.3),transparent_35%)] opacity-60" />
+                  <span className="relative shimmer-text">{content.hero.cta.play}</span>
+                </button>
+              </MagneticElement>
+              <MagneticElement strength={0.15}>
+                <button className="px-5 py-3 rounded-full border border-white/20 text-white/80 hover:border-accent hover:text-white hover:-translate-y-0.5 transition flowing-border">
+                  {content.hero.cta.whitepaper}
+                </button>
+              </MagneticElement>
+              <MagneticElement strength={0.15}>
+                <button className="px-5 py-3 rounded-full bg-white/10 text-white/80 border border-white/15 hover:bg-white/20 hover:text-white transition flowing-border">
+                  {content.hero.cta.agentNode}
+                </button>
+              </MagneticElement>
             </div>
             <div className="grid grid-cols-3 gap-3 text-xs uppercase tracking-[0.15em]">
               {content.hero.chips.map((chip) => (
@@ -119,20 +131,27 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
               {[
-                { label: content.hero.stats.chapters, value: "1,284" },
-                { label: content.hero.stats.collectors, value: "9,712" },
-                { label: content.hero.stats.agents, value: "86" },
-                { label: content.hero.stats.split, value: "42% to fans" }
+                { label: content.hero.stats.chapters, value: 1284, suffix: "" },
+                { label: content.hero.stats.collectors, value: 9712, suffix: "" },
+                { label: content.hero.stats.agents, value: 86, suffix: "" },
+                { label: content.hero.stats.split, value: 42, suffix: "% to fans" }
               ].map((item) => (
-                <div
+                <TiltCard
                   key={item.label}
-                  className="glass-veil rounded-2xl p-3 border border-white/10 flex flex-col gap-1 hover:-translate-y-1 hover:border-accent/50 transition-all duration-300"
+                  tiltMaxAngle={8}
+                  className="glass-veil rounded-2xl p-3 border border-white/10 flex flex-col gap-1 hover:border-accent/50 transition-all duration-300 spotlight"
                 >
-                  <p className="text-white text-lg font-semibold">{item.value}</p>
+                  <p className="text-white text-lg font-semibold">
+                    <CountUp
+                      end={item.value}
+                      duration={2500}
+                      suffix={item.suffix}
+                    />
+                  </p>
                   <p className="text-white/60 text-[11px] uppercase tracking-[0.2em]">
                     {item.label}
                   </p>
-                </div>
+                </TiltCard>
               ))}
             </div>
           </div>
@@ -216,13 +235,17 @@ export default function Home() {
           <section className="grid md:grid-cols-3 gap-5">
             {[content.perks.dynamic, content.perks.revenue, content.perks.wallet].map((item, index) => (
               <ScrollReveal key={item.title} delay={index * 100}>
-                <div className="glass rounded-2xl p-6 border border-white/10 hover:border-accent/60 hover:shadow-[0_20px_80px_rgba(229,9,20,0.3)] transition-all duration-500 shadow-[0_20px_80px_rgba(0,0,0,0.3)] group hover:-translate-y-2 hover:rotate-[0.6deg]">
+                <TiltCard
+                  tiltMaxAngle={10}
+                  glareEnable={true}
+                  className="glass rounded-2xl p-6 border border-white/10 hover:border-accent/60 hover:shadow-[0_20px_80px_rgba(229,9,20,0.3)] transition-all duration-500 shadow-[0_20px_80px_rgba(0,0,0,0.3)] group flowing-border spotlight"
+                >
                   <p className="text-xs uppercase tracking-[0.22em] text-accent mb-3 group-hover:text-red-400 transition-colors">
                     {item.accent}
                   </p>
-                  <h3 className="text-xl font-semibold text-white mb-3">{item.title}</h3>
+                  <h3 className="text-xl font-semibold text-white mb-3 shimmer-text">{item.title}</h3>
                   <p className="text-white/70 leading-relaxed">{item.body}</p>
-                </div>
+                </TiltCard>
               </ScrollReveal>
             ))}
           </section>
@@ -241,35 +264,41 @@ export default function Home() {
                 {content.chapters.browseAll}
               </button>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {chapters.map((chapter, index) => (
-                <ScrollReveal key={chapter.id} delay={index * 80}>
-                  <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-b from-[#0f1116] to-[#0a0c12] hover:-translate-y-2 hover:border-accent/50 hover:shadow-[0_20px_60px_rgba(229,9,20,0.3)] transition-all duration-500 transform card-shine group cursor-pointer hover:rotate-[0.8deg]">
-                    <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_20%_20%,rgba(229,9,20,0.35),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.12),transparent_30%)]" />
-                    <div className="relative aspect-[3/4]">
-                      <Image
-                        src={chapter.image}
-                        alt={chapter.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 768px) 50vw, 240px"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/10 to-black/70" />
-                      <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] uppercase tracking-[0.2em] bg-black/60 text-white/80 border border-white/10 backdrop-blur-sm">
-                        {chapter.tag}
-                      </span>
-                      <span className="absolute bottom-2 left-2 text-5xl font-display text-white drop-shadow-[0_10px_24px_rgba(229,9,20,0.45)] group-hover:text-accent transition-colors duration-300">
-                        {chapter.id}
-                      </span>
-                    </div>
-                    <div className="relative p-4 space-y-1">
-                      <p className="font-semibold text-white group-hover:text-accent transition-colors duration-300">{chapter.title}</p>
-                      <p className="text-white/60 text-sm">Agent-rendered · 铸造即刻开放</p>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
+            <FilmReelContainer startDelay={200} itemDelay={150}>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {chapters.map((chapter, index) => (
+                  <FilmReel key={chapter.id} delay={index * 150} index={index}>
+                    <TiltCard
+                      tiltMaxAngle={12}
+                      glareEnable={true}
+                      className="relative rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-b from-[#0f1116] to-[#0a0c12] hover:border-accent/50 hover:shadow-[0_20px_60px_rgba(229,9,20,0.3)] transition-all duration-500 card-shine group cursor-pointer flowing-border"
+                    >
+                      <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_20%_20%,rgba(229,9,20,0.35),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.12),transparent_30%)]" />
+                      <div className="relative aspect-[3/4]">
+                        <Image
+                          src={chapter.image}
+                          alt={chapter.title}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-700"
+                          sizes="(max-width: 768px) 50vw, 240px"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/10 to-black/70" />
+                        <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] uppercase tracking-[0.2em] bg-black/60 text-white/80 border border-white/10 backdrop-blur-sm">
+                          {chapter.tag}
+                        </span>
+                        <span className="absolute bottom-2 left-2 text-5xl font-display text-white drop-shadow-[0_10px_24px_rgba(229,9,20,0.45)] group-hover:text-accent transition-colors duration-300 shimmer-text">
+                          {chapter.id}
+                        </span>
+                      </div>
+                      <div className="relative p-4 space-y-1">
+                        <p className="font-semibold text-white group-hover:text-accent transition-colors duration-300">{chapter.title}</p>
+                        <p className="text-white/60 text-sm">Agent-rendered · 铸造即刻开放</p>
+                      </div>
+                    </TiltCard>
+                  </FilmReel>
+                ))}
+              </div>
+            </FilmReelContainer>
           </section>
         </ScrollReveal>
 

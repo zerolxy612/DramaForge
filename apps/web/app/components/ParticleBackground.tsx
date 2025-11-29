@@ -38,18 +38,18 @@ export function ParticleBackground() {
       pulse: number;
     }> = [];
 
-    // Create particles
-    for (let i = 0; i < 120; i++) {
+    // Create particles (增加数量以获得更丰富的效果)
+    for (let i = 0; i < 150; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8,
-        size: Math.random() * 2.2 + 0.8,
-        opacity: Math.random() * 0.5 + 0.2,
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: (Math.random() - 0.5) * 1.2,
+        size: Math.random() * 2.5 + 1,
+        opacity: Math.random() * 0.6 + 0.3,
         hue: 350 + Math.random() * 40,
-        drift: (Math.random() - 0.5) * 0.2,
-        pulse: Math.random()
+        drift: (Math.random() - 0.5) * 0.3,
+        pulse: Math.random() * Math.PI * 2
       });
     }
 
@@ -96,29 +96,58 @@ export function ParticleBackground() {
         ctx.fillStyle = `hsla(${particle.hue}, 90%, 56%, ${particle.opacity})`;
         ctx.fill();
 
-        // Draw connections
+        // Draw connections (增强连线效果)
         particles.slice(i + 1).forEach((otherParticle) => {
           const dx = particle.x - otherParticle.x;
           const dy = particle.y - otherParticle.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 150) {
+          if (distance < 180) {
+            const opacity = 0.12 * (1 - distance / 180);
             ctx.beginPath();
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(otherParticle.x, otherParticle.y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${0.08 * (1 - distance / 150)})`;
-            ctx.lineWidth = 0.6;
+
+            // 创建渐变连线
+            const gradient = ctx.createLinearGradient(
+              particle.x, particle.y,
+              otherParticle.x, otherParticle.y
+            );
+            gradient.addColorStop(0, `rgba(229, 9, 20, ${opacity})`);
+            gradient.addColorStop(0.5, `rgba(255, 255, 255, ${opacity * 0.8})`);
+            gradient.addColorStop(1, `rgba(229, 9, 20, ${opacity})`);
+
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 0.8;
             ctx.stroke();
           }
         });
 
-        if (distPointer < 240) {
+        // 鼠标交互连线（增强效果）
+        if (distPointer < 280) {
+          const interactionOpacity = 0.08 + 0.25 * (1 - distPointer / 280);
           ctx.beginPath();
           ctx.moveTo(particle.x, particle.y);
           ctx.lineTo(pointer.x, pointer.y);
-          ctx.strokeStyle = `rgba(229, 9, 20, ${0.05 + 0.2 * (1 - distPointer / 240)})`;
-          ctx.lineWidth = 0.6;
+
+          const gradient = ctx.createLinearGradient(
+            particle.x, particle.y,
+            pointer.x, pointer.y
+          );
+          gradient.addColorStop(0, `rgba(229, 9, 20, ${interactionOpacity * 0.5})`);
+          gradient.addColorStop(1, `rgba(229, 9, 20, ${interactionOpacity})`);
+
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = 1;
           ctx.stroke();
+
+          // 在鼠标附近添加光晕效果
+          if (distPointer < 100) {
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(229, 9, 20, ${0.15 * (1 - distPointer / 100)})`;
+            ctx.fill();
+          }
         }
       });
 

@@ -385,13 +385,129 @@ a {
   animation: fadeInUp 0.8s ease-out forwards;
 }
 
+/* Flowing Border Animation */
+.flowing-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.flowing-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(229, 9, 20, 0.8),
+    rgba(255, 255, 255, 0.6),
+    rgba(229, 9, 20, 0.8),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: flowingBorder 3s linear infinite;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.flowing-border:hover::before {
+  opacity: 1;
+}
+
+.flowing-border::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+@keyframes flowingBorder {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Spotlight Effect */
+.spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(229, 9, 20, 0.15),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Shimmer Text Effect */
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerText 3s linear infinite;
+}
+
+@keyframes shimmerText {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+/* Glow Pulse Effect */
+.glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(229, 9, 20, 0.3),
+                0 0 40px rgba(229, 9, 20, 0.2),
+                0 0 60px rgba(229, 9, 20, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(229, 9, 20, 0.5),
+                0 0 60px rgba(229, 9, 20, 0.3),
+                0 0 90px rgba(229, 9, 20, 0.2);
+  }
+}
+
 /* Performance-friendly fallbacks */
 @media (max-width: 768px), (prefers-reduced-motion: reduce) {
   .floating-card,
   .pulse-glow,
   .aurora,
   .orb,
-  .scan-line::before {
+  .scan-line::before,
+  .flowing-border::before,
+  .shimmer-text,
+  .glow-pulse {
     animation: none !important;
   }
 
@@ -429,4 +545,109 @@ a {
   .card-stack-3d:hover .card-3d:nth-child(3) {
     transform: translateX(10%) translateZ(40px) rotateY(-8deg) scale(0.96);
   }
+}
+
+/* ========================================
+   电影胶片效果 (Film Reel Effects)
+   ======================================== */
+
+/* 闪烁效果 - 模拟老式放映机启动 */
+@keyframes flicker {
+  0% { opacity: 1; brightness: 1; }
+  15% { opacity: 0.4; brightness: 0.6; }
+  30% { opacity: 1; brightness: 1.2; }
+  45% { opacity: 0.6; brightness: 0.8; }
+  60% { opacity: 1; brightness: 1; }
+  75% { opacity: 0.5; brightness: 0.7; }
+  100% { opacity: 1; brightness: 1; }
+}
+
+/* 胶片滚动抖动效果 */
+@keyframes filmRoll {
+  0% {
+    transform: translateY(2px);
+  }
+  25% {
+    transform: translateY(-1px);
+  }
+  50% {
+    transform: translateY(1px);
+  }
+  75% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 闪光效果 */
+@keyframes flash {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* 淡入效果 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 扫描线移动 */
+@keyframes scanlineMove {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* 动画类 */
+.animate-flicker {
+  animation: flicker 0.3s ease-in-out;
+}
+
+.animate-filmRoll {
+  animation: filmRoll 0.3s ease-in-out infinite;
+}
+
+.animate-flash {
+  animation: flash 0.1s ease-in-out;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+/* 扫描线 */
+.scanline {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: scanlineMove 3s linear infinite;
+  pointer-events: none;
+}
+
+/* 胶片颗粒感 */
+.film-grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+  animation: filmRoll 0.1s infinite;
+}
+
+/* 暗角效果 */
+.vignette {
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 60%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
 }
