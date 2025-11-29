@@ -135,7 +135,7 @@ export function FilmReel({ children, delay = 0, index = 0 }: FilmReelProps) {
 }
 
 interface FilmReelContainerProps {
-  children: ReactNode[];
+  children: ReactNode;
   startDelay?: number;
   itemDelay?: number;
 }
