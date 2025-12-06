@@ -1,6 +1,7 @@
 'use client';
 
 import Image from "next/image";
+import Link from "next/link";
 import { ParticleBackground } from "./components/ParticleBackground";
 import { RotatingCardStack } from "./components/RotatingCardStack";
 import { ScrollReveal } from "./components/ScrollReveal";
@@ -109,9 +110,12 @@ export default function Home() {
                 </button>
               </MagneticElement>
               <MagneticElement strength={0.15}>
-                <button className="px-5 py-3 rounded-full border border-white/20 text-white/80 hover:border-accent hover:text-white hover:-translate-y-0.5 transition flowing-border">
+                <Link 
+                  href="/whitepaper"
+                  className="px-5 py-3 rounded-full border border-white/20 text-white/80 hover:border-accent hover:text-white hover:-translate-y-0.5 transition flowing-border inline-block"
+                >
                   {content.hero.cta.whitepaper}
-                </button>
+                </Link>
               </MagneticElement>
               <MagneticElement strength={0.15}>
                 <button className="px-5 py-3 rounded-full bg-white/10 text-white/80 border border-white/15 hover:bg-white/20 hover:text-white transition flowing-border">
