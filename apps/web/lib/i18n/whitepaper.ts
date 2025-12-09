@@ -545,3 +545,5 @@ export function getWhitepaperContent(lang: Language = 'en'): WhitepaperContent {
   return whitepaperContent[lang];
 }
 
+
+
