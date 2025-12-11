@@ -70,7 +70,7 @@ export function DemoEndScreen({ dramaId }: DemoEndScreenProps) {
   
   return (
     <div className={`
-      fixed inset-0 z-50 flex items-center justify-center
+      absolute inset-0 z-50 flex items-center justify-center
       bg-black/90 backdrop-blur-xl
       transition-opacity duration-500
       ${isVisible ? 'opacity-100' : 'opacity-0'}
@@ -118,17 +118,17 @@ export function DemoEndScreen({ dramaId }: DemoEndScreenProps) {
         {/* 标题 */}
         <div className="mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/30 mb-6 animate-pulse">
-            <span className="text-accent text-sm font-medium">🎬 本章体验完成</span>
+            <span className="text-accent text-sm font-medium">🎬 杀青！</span>
           </div>
           
           <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
             <span className="bg-gradient-to-r from-white via-accent to-white bg-clip-text text-transparent animate-shimmer-text">
-              感谢你的参与！
+              导演，辛苦了！
             </span>
           </h1>
           
           <p className="text-white/60 text-lg max-w-md mx-auto">
-            你刚刚体验了「<span className="text-accent">{currentDrama?.title || '赛博侦探'}</span>」的互动剧情
+            你执导了「<span className="text-accent">{currentDrama?.title || '赛博侦探'}</span>」的独特故事线
           </p>
         </div>
         
@@ -140,15 +140,15 @@ export function DemoEndScreen({ dramaId }: DemoEndScreenProps) {
         `}>
           <div className="glass rounded-2xl p-6 border border-white/10 hover:border-accent/30 transition group">
             <div className="text-3xl font-bold text-accent mb-1 group-hover:scale-110 transition-transform">{totalChoices}</div>
-            <div className="text-white/60 text-sm">关键抉择</div>
+            <div className="text-white/60 text-sm">执导场次</div>
           </div>
           <div className="glass rounded-2xl p-6 border border-white/10 hover:border-accent/30 transition group">
             <div className="text-3xl font-bold text-accent mb-1 group-hover:scale-110 transition-transform">{totalDuration}s</div>
-            <div className="text-white/60 text-sm">剧情时长</div>
+            <div className="text-white/60 text-sm">片长</div>
           </div>
           <div className="glass rounded-2xl p-6 border border-white/10 hover:border-accent/30 transition group">
             <div className="text-3xl font-bold text-green-400 mb-1 group-hover:scale-110 transition-transform">+{(totalChoices * 10)}</div>
-            <div className="text-white/60 text-sm">获得积分</div>
+            <div className="text-white/60 text-sm">导演积分</div>
           </div>
         </div>
         
@@ -159,7 +159,7 @@ export function DemoEndScreen({ dramaId }: DemoEndScreenProps) {
           ${showStats ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'}
         `}>
           <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-            <span>📖</span> 你的故事线
+            <span>🎞️</span> 你执导的分镜
           </h3>
           <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
             {nodePath.map((node, index) => (
@@ -215,10 +215,10 @@ export function DemoEndScreen({ dramaId }: DemoEndScreenProps) {
               {isRestarting ? (
                 <span className="flex items-center gap-2">
                   <span className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  加载中...
+                  准备中...
                 </span>
               ) : (
-                '🔄 重新体验'
+                '🎬 再执导一次'
               )}
             </span>
           </button>
@@ -242,7 +242,7 @@ export function DemoEndScreen({ dramaId }: DemoEndScreenProps) {
           ${showStats ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'}
         `}>
           <p className="text-white/40 text-sm mb-4">
-            你的每个选择都将上链记录，成为独一无二的故事 🔗
+            你执导的每一幕都已上链，成为独一无二的链上电影 🔗
           </p>
           
           <div className="flex justify-center gap-6">

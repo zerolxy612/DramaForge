@@ -3,17 +3,18 @@
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { useTheaterStore } from '@/lib/stores/theaterStore';
-import type { StoryNode } from '@/lib/types';
-import { ParticleBackground } from '@/app/components/ParticleBackground';
 import { CinematicIntro } from './components/CinematicIntro';
-import { CinematicPlayer } from './components/CinematicPlayer';
-import { CinematicBranchSelector } from './components/CinematicBranchSelector';
-import { ProgressBar } from './components/ProgressBar';
-import { AssetPreview } from './components/AssetPreview';
+import { ImmersivePlayer } from './components/ImmersivePlayer';
+import { DirectorChoicePanel } from './components/DirectorChoicePanel';
+import { AssetDrawer } from './components/AssetDrawer';
+import { StoryTimeline } from './components/StoryTimeline';
 import { CustomFrameEditor } from './components/CustomFrameEditor';
 import { DemoEndScreen } from './components/DemoEndScreen';
 import { PointsToast } from './components/PointsToast';
-import { VideoPreview } from './components/VideoPreview';
+import { OnChainConfirmation } from './components/OnChainConfirmation';
+import { FilmStripPreview } from './components/FilmStripPreview';
+
+type PlayPhase = 'intro' | 'watching' | 'choosing' | 'transitioning';
 
 export default function TheaterPage() {
   const params = useParams();
@@ -24,6 +25,7 @@ export default function TheaterPage() {
     currentNode,
     nodePath,
     candidateFrames,
+    selectedFrame,
     isCustomMode,
     isLoading,
     isTransitioning,
@@ -31,64 +33,72 @@ export default function TheaterPage() {
     isDemoEnd,
     pointsChange,
     setPointsChange,
+    setIsCustomMode,
     loadMockDrama,
   } = useTheaterStore();
   
-  const [showIntro, setShowIntro] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [showControls, setShowControls] = useState(false);
-  const [isVideoMinimized, setIsVideoMinimized] = useState(false);
+  // 播放阶段状态
+  const [phase, setPhase] = useState<PlayPhase>('intro');
+  const [showUI, setShowUI] = useState(false);
+  const [showOnChainConfirm, setShowOnChainConfirm] = useState(false);
   
-  // 获取预告片视频URL（只有开场节点有）
-  const trailerVideoUrl = currentNode?.confirmedFrame?.videoUrl;
-  const showTrailer = !!trailerVideoUrl && nodePath.length === 1; // 只在第一幕显示预告片
-  
+  // 加载剧集
   useEffect(() => {
     if (dramaId === 'demo') {
       loadMockDrama();
-    } else {
-      console.log('Loading drama:', dramaId);
     }
   }, [dramaId, loadMockDrama]);
   
-  // Intro 完成后开始播放
+  // Intro 完成
   const handleIntroComplete = useCallback(() => {
-    setShowIntro(false);
-    setTimeout(() => {
-      setIsPlaying(true);
-      setShowControls(true);
-    }, 500);
+    setPhase('watching');
+    // 延迟显示 UI
+    setTimeout(() => setShowUI(true), 500);
   }, []);
   
-  // 节点变化时触发新的场景转换
+  // 场景播放完成
+  const handleSceneEnd = useCallback(() => {
+    // 如果有候选分镜，进入选择阶段
+    if (candidateFrames.length > 0) {
+      setPhase('choosing');
+    }
+  }, [candidateFrames]);
+  
+  // 监听节点变化
   useEffect(() => {
     if (currentNode && nodePath.length > 1) {
-      setIsPlaying(false);
-      // 短暂延迟后开始播放新场景
-      const timer = setTimeout(() => setIsPlaying(true), 800);
-      return () => clearTimeout(timer);
+      // 新节点，重新开始播放
+      setPhase('watching');
+      // 显示链上确认
+      setShowOnChainConfirm(true);
     }
   }, [currentNode?.nodeId]);
+  
+  // 监听转场状态
+  useEffect(() => {
+    if (isTransitioning) {
+      setPhase('transitioning');
+    }
+  }, [isTransitioning]);
   
   // 加载状态
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="absolute inset-0 bg-black flex items-center justify-center">
         <div className="text-center space-y-6">
-          {/* 电影放映机加载动画 */}
-          <div className="relative h-24 w-24 mx-auto">
-            {/* 胶片卷轴 */}
-            <div className="absolute inset-0 border-4 border-white/20 rounded-full" />
-            <div className="absolute inset-2 border-4 border-accent border-t-transparent rounded-full animate-spin" />
-            <div className="absolute inset-4 border-4 border-white/10 rounded-full" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-3xl">🎬</span>
+          <div className="relative">
+            {/* 导演椅加载动画 */}
+            <div className="h-24 w-24 mx-auto relative">
+              <div className="absolute inset-0 border-4 border-white/10 rounded-full" />
+              <div className="absolute inset-0 border-4 border-accent border-t-transparent rounded-full animate-spin" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-4xl">🎬</span>
+              </div>
             </div>
           </div>
-          
           <div>
-            <p className="text-white font-medium mb-1">正在准备放映...</p>
-            <p className="text-white/40 text-sm">Loading Cinematic Experience</p>
+            <p className="text-white font-medium mb-1">布置拍摄现场...</p>
+            <p className="text-white/40 text-sm">Preparing Director's Cut</p>
           </div>
         </div>
       </div>
@@ -100,10 +110,34 @@ export default function TheaterPage() {
     return <DemoEndScreen dramaId={dramaId} />;
   }
   
+  // 自定义编辑器模式
+  if (isCustomMode) {
+    return (
+      <div className="absolute inset-0 bg-black overflow-auto">
+        <div className="min-h-screen py-20 px-6">
+          <div className="max-w-5xl mx-auto">
+            {/* 返回按钮 */}
+            <button
+              onClick={() => setIsCustomMode(false)}
+              className="mb-8 flex items-center gap-2 text-white/60 hover:text-white transition"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              返回剧场
+            </button>
+            
+            <CustomFrameEditor dramaId={dramaId} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   return (
-    <div className="min-h-screen relative bg-black overflow-hidden">
-      {/* 电影开场动画 */}
-      {showIntro && currentDrama && (
+    <div className="absolute inset-0 bg-black overflow-hidden">
+      {/* 开场动画 */}
+      {phase === 'intro' && currentDrama && (
         <CinematicIntro
           title={currentDrama.title}
           chapter={currentNode?.depth ?? 1}
@@ -111,28 +145,75 @@ export default function TheaterPage() {
         />
       )}
       
-      {/* 背景层 */}
-      <div className="fixed inset-0 bg-[#030303]" />
-      
-      {/* 动态背景 - 基于当前场景 */}
-      {currentNode?.confirmedFrame.thumbnailUrl && (
-        <div 
-          className="fixed inset-0 opacity-20 blur-3xl scale-110 transition-opacity duration-1000"
-          style={{
-            backgroundImage: `url(${currentNode.confirmedFrame.thumbnailUrl})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
+      {/* 全屏沉浸式播放器 */}
+      {phase !== 'intro' && (
+        <ImmersivePlayer
+          frame={currentNode?.confirmedFrame}
+          isPlaying={phase === 'watching'}
+          onSceneEnd={handleSceneEnd}
         />
       )}
       
-      {/* 粒子效果 */}
-      <div className="fixed inset-0 opacity-30">
-        <ParticleBackground />
+      {/* 转场遮罩 */}
+      {phase === 'transitioning' && (
+        <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <div className="relative">
+              <div className="h-16 w-16 mx-auto">
+                <div className="absolute inset-0 border-4 border-white/10 rounded-full" />
+                <div className="absolute inset-0 border-4 border-accent border-t-transparent rounded-full animate-spin" />
+              </div>
+            </div>
+            <p className="text-white/60 text-sm tracking-wider">下一幕准备中...</p>
+          </div>
+        </div>
+      )}
+      
+      {/* 顶部故事时间轴 - 沉浸时淡出 */}
+      <div className={`
+        transition-all duration-500
+        ${showUI && phase !== 'transitioning' ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}
+      `}>
+        <StoryTimeline
+          nodes={nodePath}
+          currentIndex={nodePath.length - 1}
+          totalExpected={5}
+          dramaTitle={currentDrama?.title}
+          userPoints={userPoints?.balance ?? 0}
+        />
       </div>
       
-      {/* 噪点纹理 */}
-      <div className="fixed inset-0 noise pointer-events-none opacity-20" />
+      {/* 胶片分镜时间线 - 选择阶段显示 */}
+      {phase === 'choosing' && !isTransitioning && (
+        <div className="absolute left-0 right-0 top-28 z-50 px-0 pointer-events-none">
+          <div className="w-full pointer-events-auto">
+            <FilmStripPreview
+              nodePath={nodePath}
+              isChoosing={true}
+              totalFrames={5}
+            />
+          </div>
+        </div>
+      )}
+      
+      {/* Netflix 风格选择面板 */}
+      <DirectorChoicePanel
+        frames={candidateFrames}
+        isVisible={phase === 'choosing' && !isTransitioning}
+        remainingFreeRefresh={userPoints?.dailyFreeRefresh ?? 10}
+        onCustomMode={() => setIsCustomMode(true)}
+      />
+      
+      {/* 底部资产抽屉 - 选择时隐藏 */}
+      <div className={`
+        transition-all duration-500
+        ${showUI && phase === 'watching' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}
+      `}>
+        <AssetDrawer
+          frame={currentNode?.confirmedFrame}
+          isChoosing={phase === 'choosing'}
+        />
+      </div>
       
       {/* 积分变化提示 */}
       {pointsChange && (
@@ -143,206 +224,13 @@ export default function TheaterPage() {
         />
       )}
       
-      {/* 转场遮罩 */}
-      {isTransitioning && (
-        <div className="fixed inset-0 z-40 bg-black flex items-center justify-center">
-          <div className="text-center space-y-4">
-            <div className="relative">
-              {/* 电影胶片转动 */}
-              <div className="h-20 w-20 mx-auto relative">
-                <div className="absolute inset-0 border-4 border-white/20 rounded-full" />
-                <div className="absolute inset-0 border-4 border-accent border-t-transparent rounded-full animate-spin" />
-              </div>
-            </div>
-            <p className="text-white/60 text-sm tracking-wider">场景切换中...</p>
-          </div>
-        </div>
-      )}
-      
-      {/* 主内容 */}
-      <div className={`
-        relative z-10 transition-opacity duration-500
-        ${showIntro ? 'opacity-0' : 'opacity-100'}
-      `}>
-        {/* 顶部控制栏 */}
-        <header className={`
-          fixed top-0 left-0 right-0 z-30
-          transition-all duration-500
-          ${showControls ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}
-        `}>
-          <div className="bg-gradient-to-b from-black via-black/80 to-transparent py-4 px-6">
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
-              {/* 左侧：返回 + 标题 */}
-              <div className="flex items-center gap-4">
-                <a 
-                  href="/"
-                  className="h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 grid place-items-center text-white/60 hover:text-white hover:bg-white/20 transition"
-                >
-                  ←
-                </a>
-                
-                <div>
-                  <h1 className="text-lg font-display font-bold text-white">
-                    {currentDrama?.title}
-                  </h1>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="text-accent">第 {currentNode?.depth ?? 1} 幕</span>
-                    <span className="text-white/30">|</span>
-                    <span className="text-white/40">
-                      {nodePath.length} 个场景
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* 右侧：积分 */}
-              <div className="flex items-center gap-4">
-                {/* 故事树入口 */}
-                <a
-                  href={`/drama/${dramaId}/tree`}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition text-sm"
-                >
-                  <span>🌳</span>
-                  <span className="hidden md:inline">故事树</span>
-                </a>
-                
-                {/* 积分显示 */}
-                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10">
-                  <span className="text-lg">💰</span>
-                  <span className="text-accent font-bold">{userPoints?.balance ?? 0}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
-        
-        {/* 进度条 - 固定在页面内容顶部（跟随内容滚动） */}
-        <div className={`
-          sticky top-20 z-20 px-6 py-2 bg-gradient-to-b from-black/80 to-transparent
-          transition-all duration-500
-          ${showControls ? 'opacity-100' : 'opacity-0'}
-        `}>
-          <div className="max-w-7xl mx-auto">
-            <ProgressBar 
-              current={currentDrama?.currentDuration ?? 0}
-              target={currentDrama?.targetDuration ?? 300}
-            />
-          </div>
-        </div>
-        
-        {/* 主舞台区域 */}
-        <main className="pt-32 pb-12 px-6">
-          <div className="max-w-7xl mx-auto">
-            {/* 自定义编辑器模式 */}
-            {isCustomMode ? (
-              <div className="max-w-5xl mx-auto animate-fadeIn">
-                <CustomFrameEditor dramaId={dramaId} />
-              </div>
-            ) : (
-              <div className="grid lg:grid-cols-[1fr_320px] gap-8">
-                {/* 左侧：主播放器 + 选择器 */}
-                <div className="space-y-8">
-                  {/* 电影播放器 */}
-                  <CinematicPlayer 
-                    frame={currentNode?.confirmedFrame}
-                    isPlaying={isPlaying}
-                  />
-                  
-                  {/* 分支选择器 */}
-                  <CinematicBranchSelector 
-                    frames={candidateFrames}
-                    remainingFreeRefresh={userPoints?.dailyFreeRefresh ?? 10}
-                  />
-                </div>
-                
-                {/* 右侧：资产面板 */}
-                <aside className="hidden lg:block space-y-6">
-                  {/* 预告视频 - 只在第一幕显示 */}
-                  {showTrailer && !isVideoMinimized && (
-                    <VideoPreview
-                      videoUrl={trailerVideoUrl}
-                      thumbnailUrl={currentNode?.confirmedFrame?.thumbnailUrl}
-                      title="剧集预告"
-                      isMinimized={false}
-                      onToggleMinimize={() => setIsVideoMinimized(true)}
-                    />
-                  )}
-                  
-                  <AssetPreview frame={currentNode?.confirmedFrame} />
-                  
-                  {/* 当前故事线 */}
-                  <div className="glass rounded-xl p-5 border border-white/10">
-                    <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-                      <span>📍</span> 当前故事线
-                    </h3>
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {nodePath.map((node: StoryNode, index: number) => (
-                        <div 
-                          key={node.nodeId}
-                          className={`flex items-center gap-2 text-xs ${
-                            index === nodePath.length - 1 ? 'text-accent' : 'text-white/40'
-                          }`}
-                        >
-                          <span className={`
-                            h-5 w-5 rounded-full grid place-items-center text-[10px] font-bold
-                            ${index === nodePath.length - 1 
-                              ? 'bg-accent text-white' 
-                              : 'bg-white/10 text-white/60'
-                            }
-                          `}>
-                            {index + 1}
-                          </span>
-                          <span className="truncate">
-                            {node.confirmedFrame.script.slice(0, 30)}...
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* 快捷操作 */}
-                  <div className="glass rounded-xl p-5 border border-white/10 space-y-3">
-                    <a
-                      href={`/drama/${dramaId}/tree`}
-                      className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition group"
-                    >
-                      <span className="text-xl group-hover:scale-110 transition-transform">🌳</span>
-                      <div>
-                        <p className="text-white/80 text-sm font-medium">查看故事树</p>
-                        <p className="text-white/40 text-xs">探索所有分支</p>
-                      </div>
-                    </a>
-                    <a
-                      href="/assets"
-                      className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition group"
-                    >
-                      <span className="text-xl group-hover:scale-110 transition-transform">🗄️</span>
-                      <div>
-                        <p className="text-white/80 text-sm font-medium">资产库</p>
-                        <p className="text-white/40 text-xs">浏览社区资产</p>
-                      </div>
-                    </a>
-                  </div>
-                </aside>
-              </div>
-            )}
-          </div>
-        </main>
-      </div>
-      
-      {/* 底部装饰 - 电影院座位暗示 */}
-      <div className="fixed bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black to-transparent pointer-events-none z-20" />
-      
-      {/* 最小化的预告视频悬浮窗 */}
-      {showTrailer && isVideoMinimized && (
-        <VideoPreview
-          videoUrl={trailerVideoUrl}
-          thumbnailUrl={currentNode?.confirmedFrame?.thumbnailUrl}
-          title="剧集预告"
-          isMinimized={true}
-          onToggleMinimize={() => setIsVideoMinimized(false)}
-        />
-      )}
+      {/* 链上确认详情 */}
+      <OnChainConfirmation
+        isVisible={showOnChainConfirm}
+        nodeId={currentNode?.nodeId}
+        newAssetsCount={0}
+        onClose={() => setShowOnChainConfirm(false)}
+      />
     </div>
   );
 }

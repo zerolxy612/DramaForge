@@ -1,19 +1,21 @@
 'use client';
 
-import { useRef, useState, MouseEvent, ReactNode } from 'react';
+import { useRef, useState, MouseEvent, ReactNode, MouseEventHandler } from 'react';
 
 interface TiltCardProps {
   children: ReactNode;
   tiltMaxAngle?: number;
   glareEnable?: boolean;
   className?: string;
+  onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
 export function TiltCard({ 
   children, 
   tiltMaxAngle = 15,
   glareEnable = true,
-  className = '' 
+  className = '',
+  onClick
 }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -52,6 +54,7 @@ export function TiltCard({
       className={`relative ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onClick={onClick}
       style={{
         transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
         transition: tilt.x === 0 ? 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)' : 'none',
@@ -71,4 +74,3 @@ export function TiltCard({
     </div>
   );
 }
-

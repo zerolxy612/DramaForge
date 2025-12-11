@@ -28,7 +28,7 @@ export function PointsToast({ amount, type, onClose }: PointsToastProps) {
   
   return (
     <div className={`
-      fixed top-24 right-4 z-50
+      absolute top-24 right-4 z-50
       transition-all duration-300
       ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}
     `}>
@@ -53,10 +53,10 @@ export function PointsToast({ amount, type, onClose }: PointsToastProps) {
             text-lg font-bold
             ${isEarn ? 'text-green-400' : 'text-orange-400'}
           `}>
-            {isEarn ? '+' : '-'}{amount} 积分
+            {isEarn ? '+' : '-'}{amount} 导演积分
           </div>
           <div className="text-white/60 text-xs">
-            {isEarn ? '确认分镜奖励' : '已扣除'}
+            {isEarn ? '执导奖励' : '已扣除'}
           </div>
         </div>
         

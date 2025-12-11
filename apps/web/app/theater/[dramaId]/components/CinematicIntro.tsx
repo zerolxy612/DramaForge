@@ -42,7 +42,7 @@ export function CinematicIntro({ title, chapter, onComplete }: CinematicIntroPro
   if (phase === 'done') return null;
   
   return (
-    <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center overflow-hidden">
+    <div className="absolute inset-0 z-[100] bg-black flex items-center justify-center overflow-hidden">
       {/* 胶片边框装饰 */}
       <div className="absolute top-0 left-0 right-0 h-16 flex">
         {[...Array(20)].map((_, i) => (
