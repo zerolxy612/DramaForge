@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useCustomFrameEditorStore, useTheaterStore } from '@/lib/stores/theaterStore';
+import { useState, useEffect } from 'react';
+import { useCustomFrameEditorStore, useTheaterStore, useAssetLibraryStore } from '@/lib/stores/theaterStore';
 import type { Asset, AssetType } from '@/lib/types';
 
 interface CustomFrameEditorProps {
@@ -9,22 +9,41 @@ interface CustomFrameEditorProps {
 }
 
 export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
-  const { setIsCustomMode, setIsGenerating } = useTheaterStore();
+  const { setIsCustomMode, isGenerating: isTheaterGenerating, generateCustomFrame: theaterGenerateCustomFrame } = useTheaterStore();
   const {
     selectedActors,
     selectedScene,
     selectedProps,
     script,
+    addActor,
     removeActor,
     setScene,
+    addProp,
     removeProp,
     setScript,
     canGenerate,
+    getGenerateParams,
     reset,
   } = useCustomFrameEditorStore();
   
+  const {
+    actors,
+    scenes,
+    props,
+    loadAssets,
+    isLoading: isLoadingAssets,
+  } = useAssetLibraryStore();
+  
   const [activeTab, setActiveTab] = useState<AssetType | null>(null);
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // 加载资产库
+  useEffect(() => {
+    if (actors.length === 0 || scenes.length === 0 || props.length === 0) {
+      loadAssets();
+    }
+  }, [actors.length, scenes.length, props.length, loadAssets]);
   
   const handleCancel = () => {
     reset();
@@ -35,26 +54,66 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
     if (!canGenerate()) return;
     
     setIsGeneratingPreview(true);
-    // TODO: 调用自定义分镜生成API
-    console.log('Generating custom frame:', {
-      actors: selectedActors.map(a => a.assetId),
-      scene: selectedScene?.assetId,
-      props: selectedProps.map(p => p.assetId),
-      script,
-    });
     
-    setTimeout(() => {
+    try {
+      await theaterGenerateCustomFrame(getGenerateParams());
+      reset();
+    } catch (error) {
+      console.error('Failed to generate custom frame:', error);
+    } finally {
       setIsGeneratingPreview(false);
-    }, 3000);
+    }
+  };
+  
+  const handleSelectAsset = (asset: Asset) => {
+    switch (asset.assetType) {
+      case 'ACTOR':
+        addActor(asset);
+        break;
+      case 'SCENE':
+        setScene(asset);
+        break;
+      case 'PROP':
+        addProp(asset);
+        break;
+    }
+    setActiveTab(null);
+    setSearchQuery('');
+  };
+  
+  // 过滤资产
+  const getFilteredAssets = (): Asset[] => {
+    let assetList: Asset[] = [];
+    switch (activeTab) {
+      case 'ACTOR':
+        assetList = actors;
+        break;
+      case 'SCENE':
+        assetList = scenes;
+        break;
+      case 'PROP':
+        assetList = props;
+        break;
+      default:
+        return [];
+    }
+    
+    if (!searchQuery) return assetList;
+    
+    const query = searchQuery.toLowerCase();
+    return assetList.filter(asset => 
+      asset.name.toLowerCase().includes(query) ||
+      asset.description?.toLowerCase().includes(query)
+    );
   };
   
   return (
-    <div className="glass-veil rounded-2xl border border-accent/30 overflow-hidden">
+    <div className="glass-veil rounded-2xl border border-accent/30 overflow-hidden animate-scale-in">
       {/* 头部 */}
-      <div className="p-4 border-b border-white/10 bg-accent/5">
+      <div className="p-4 border-b border-white/10 bg-gradient-to-r from-accent/10 to-purple-500/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">✨</span>
+            <span className="text-2xl animate-bounce">✨</span>
             <div>
               <h2 className="text-lg font-semibold text-white">自定义分镜编辑器</h2>
               <p className="text-white/60 text-sm">从社区资产库选择素材，创作你的专属分镜</p>
@@ -62,25 +121,25 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
           </div>
           <button
             onClick={handleCancel}
-            className="text-white/60 hover:text-white transition"
+            className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 text-white/60 hover:text-white transition grid place-items-center"
           >
             ✕
           </button>
         </div>
       </div>
       
-      <div className="p-4 space-y-6">
+      <div className="p-5 space-y-6">
         {/* 角色选择 */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-white">
-              角色 <span className="text-accent">*</span>
+            <label className="text-sm font-medium text-white flex items-center gap-2">
+              <span>👤</span> 角色 <span className="text-accent">*</span>
             </label>
             <button
               onClick={() => setActiveTab('ACTOR')}
-              className="text-xs text-accent hover:underline"
+              className="text-xs text-accent hover:underline flex items-center gap-1"
             >
-              + 添加角色
+              <span>+</span> 添加角色
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -88,19 +147,26 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
               selectedActors.map((actor) => (
                 <div
                   key={actor.assetId}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/20"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/20 group hover:border-accent/30 transition"
                 >
+                  {actor.thumbnailUrl && (
+                    <img 
+                      src={actor.thumbnailUrl} 
+                      alt={actor.name}
+                      className="h-6 w-6 rounded-full object-cover"
+                    />
+                  )}
                   <span className="text-white/80 text-sm">@{actor.name}</span>
                   <button
                     onClick={() => removeActor(actor.assetId)}
-                    className="text-white/40 hover:text-red-400 transition"
+                    className="text-white/40 hover:text-red-400 transition ml-1"
                   >
                     ×
                   </button>
                 </div>
               ))
             ) : (
-              <span className="text-white/40 text-sm">请选择至少一个角色</span>
+              <div className="text-white/40 text-sm py-2">请选择至少一个角色</div>
             )}
           </div>
         </div>
@@ -108,41 +174,52 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
         {/* 场景选择 */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-white">
-              场景 <span className="text-accent">*</span>
+            <label className="text-sm font-medium text-white flex items-center gap-2">
+              <span>🏞️</span> 场景 <span className="text-accent">*</span>
             </label>
             <button
               onClick={() => setActiveTab('SCENE')}
-              className="text-xs text-accent hover:underline"
+              className="text-xs text-accent hover:underline flex items-center gap-1"
             >
-              {selectedScene ? '更换场景' : '+ 选择场景'}
+              {selectedScene ? '更换场景' : <><span>+</span> 选择场景</>}
             </button>
           </div>
           {selectedScene ? (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/20">
-              <span className="text-lg">📍</span>
-              <span className="text-white/80">{selectedScene.name}</span>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/20 group hover:border-accent/30 transition">
+              {selectedScene.thumbnailUrl && (
+                <img 
+                  src={selectedScene.thumbnailUrl} 
+                  alt={selectedScene.name}
+                  className="h-12 w-20 rounded-lg object-cover"
+                />
+              )}
+              <div className="flex-1">
+                <span className="text-white/80">{selectedScene.name}</span>
+                <p className="text-white/40 text-xs mt-0.5">点击更换</p>
+              </div>
               <button
                 onClick={() => setScene(null)}
-                className="ml-auto text-white/40 hover:text-red-400 transition"
+                className="text-white/40 hover:text-red-400 transition"
               >
                 ×
               </button>
             </div>
           ) : (
-            <span className="text-white/40 text-sm">请选择一个场景</span>
+            <div className="text-white/40 text-sm py-2">请选择一个场景</div>
           )}
         </div>
         
         {/* 道具选择 */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-white">道具</label>
+            <label className="text-sm font-medium text-white flex items-center gap-2">
+              <span>🔧</span> 道具 <span className="text-white/40 text-xs">(可选)</span>
+            </label>
             <button
               onClick={() => setActiveTab('PROP')}
-              className="text-xs text-accent hover:underline"
+              className="text-xs text-accent hover:underline flex items-center gap-1"
             >
-              + 添加道具
+              <span>+</span> 添加道具
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -150,122 +227,209 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
               selectedProps.map((prop) => (
                 <div
                   key={prop.assetId}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/20"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/20 group hover:border-accent/30 transition"
                 >
-                  <span className="text-sm">🔧</span>
+                  {prop.thumbnailUrl && (
+                    <img 
+                      src={prop.thumbnailUrl} 
+                      alt={prop.name}
+                      className="h-5 w-5 rounded object-cover"
+                    />
+                  )}
                   <span className="text-white/80 text-sm">{prop.name}</span>
                   <button
                     onClick={() => removeProp(prop.assetId)}
-                    className="text-white/40 hover:text-red-400 transition"
+                    className="text-white/40 hover:text-red-400 transition ml-1"
                   >
                     ×
                   </button>
                 </div>
               ))
             ) : (
-              <span className="text-white/40 text-sm">可选：添加道具丰富画面</span>
+              <div className="text-white/40 text-sm py-2">添加道具可以丰富画面</div>
             )}
           </div>
         </div>
         
         {/* 分镜脚本 */}
         <div>
-          <label className="text-sm font-medium text-white mb-2 block">
-            分镜脚本 <span className="text-accent">*</span>
+          <label className="text-sm font-medium text-white mb-3 flex items-center gap-2">
+            <span>📝</span> 分镜脚本 <span className="text-accent">*</span>
           </label>
           <textarea
             value={script}
             onChange={(e) => setScript(e.target.value)}
-            placeholder="描述这个分镜的内容，例如：远景镜头，男主拉着女主慌张地往逃生通道跑..."
-            className="w-full h-24 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 resize-none focus:outline-none focus:border-accent/50 transition"
+            placeholder="描述这个分镜的内容，例如：远景镜头，K手持芯片站在雨中，身后霓虹灯闪烁..."
+            className="w-full h-28 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 resize-none focus:outline-none focus:border-accent/50 transition"
+            maxLength={200}
           />
-          <p className="text-right text-white/40 text-xs mt-1">
-            {script.length} / 200
-          </p>
+          <div className="flex justify-between mt-2">
+            <p className="text-white/40 text-xs">
+              提示：描述越具体，生成效果越好
+            </p>
+            <p className={`text-xs ${script.length > 180 ? 'text-orange-400' : 'text-white/40'}`}>
+              {script.length} / 200
+            </p>
+          </div>
         </div>
         
         {/* 操作按钮 */}
         <div className="flex gap-3 pt-2">
           <button
             onClick={handleCancel}
-            className="flex-1 py-3 rounded-xl border border-white/20 text-white/80 hover:bg-white/5 transition"
+            className="flex-1 py-3.5 rounded-xl border border-white/20 text-white/80 hover:bg-white/5 hover:border-white/30 transition font-medium"
           >
             取消
           </button>
           <button
             onClick={handleGenerate}
-            disabled={!canGenerate() || isGeneratingPreview}
+            disabled={!canGenerate() || isGeneratingPreview || isTheaterGenerating}
             className={`
-              flex-1 py-3 rounded-xl font-semibold transition
-              ${canGenerate() && !isGeneratingPreview
-                ? 'bg-gradient-to-r from-accent to-red-500 text-white hover:opacity-90'
+              flex-1 py-3.5 rounded-xl font-semibold transition relative overflow-hidden
+              ${canGenerate() && !isGeneratingPreview && !isTheaterGenerating
+                ? 'bg-gradient-to-r from-accent to-red-500 text-white hover:opacity-90 hover:scale-[1.02]'
                 : 'bg-white/10 text-white/40 cursor-not-allowed'}
             `}
           >
-            {isGeneratingPreview ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                生成中...
-              </span>
-            ) : (
-              '预览生成效果'
+            {/* 闪光效果 */}
+            {canGenerate() && !isGeneratingPreview && !isTheaterGenerating && (
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
             )}
+            
+            <span className="relative">
+              {isGeneratingPreview || isTheaterGenerating ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  AI 生成中...
+                </span>
+              ) : (
+                '✨ 生成分镜'
+              )}
+            </span>
           </button>
         </div>
         
         {/* 积分提示 */}
-        <p className="text-center text-white/40 text-xs">
-          自定义分镜生成消耗 <span className="text-accent">10</span> 积分
+        <p className="text-center text-white/40 text-xs flex items-center justify-center gap-2">
+          <span>💰</span>
+          自定义分镜生成消耗 <span className="text-accent font-medium">10</span> 积分
         </p>
       </div>
       
-      {/* 资产选择弹窗 - TODO: 实现完整的资产选择器 */}
+      {/* 资产选择弹窗 */}
       {activeTab && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="glass rounded-2xl p-6 max-w-lg w-full mx-4 border border-white/20">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">
-                选择{activeTab === 'ACTOR' ? '角色' : activeTab === 'SCENE' ? '场景' : '道具'}
-              </h3>
-              <button
-                onClick={() => setActiveTab(null)}
-                className="text-white/60 hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-            
-            {/* 搜索框 */}
-            <input
-              type="text"
-              placeholder="搜索资产..."
-              className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/30 mb-4"
-            />
-            
-            {/* 资产列表占位 */}
-            <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div
-                  key={i}
-                  className="p-3 rounded-lg bg-white/5 border border-white/10 hover:border-accent/50 cursor-pointer transition"
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div 
+            className="glass rounded-2xl max-w-lg w-full border border-white/20 animate-scale-in max-h-[80vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 弹窗头部 */}
+            <div className="p-5 border-b border-white/10">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                  {activeTab === 'ACTOR' && <span>👤</span>}
+                  {activeTab === 'SCENE' && <span>🏞️</span>}
+                  {activeTab === 'PROP' && <span>🔧</span>}
+                  选择{activeTab === 'ACTOR' ? '角色' : activeTab === 'SCENE' ? '场景' : '道具'}
+                </h3>
+                <button
+                  onClick={() => {
+                    setActiveTab(null);
+                    setSearchQuery('');
+                  }}
+                  className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 text-white/60 hover:text-white transition grid place-items-center"
                 >
-                  <div className="h-16 bg-white/5 rounded mb-2" />
-                  <p className="text-white/80 text-sm truncate">
-                    {activeTab === 'ACTOR' ? `角色 ${i}` : 
-                     activeTab === 'SCENE' ? `场景 ${i}` : 
-                     `道具 ${i}`}
-                  </p>
-                </div>
-              ))}
+                  ✕
+                </button>
+              </div>
+              
+              {/* 搜索框 */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="搜索资产..."
+                  className="w-full px-4 py-2.5 pl-10 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-accent/50 transition"
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40">
+                  🔍
+                </span>
+              </div>
             </div>
             
-            <p className="text-center text-white/40 text-xs mt-4">
-              资产选择器开发中...
-            </p>
+            {/* 资产列表 */}
+            <div className="flex-1 overflow-y-auto p-5">
+              {isLoadingAssets ? (
+                <div className="text-center py-8">
+                  <div className="h-8 w-8 mx-auto border-2 border-accent border-t-transparent rounded-full animate-spin mb-3" />
+                  <p className="text-white/60 text-sm">加载资产中...</p>
+                </div>
+              ) : (
+                <div className={`grid gap-3 ${activeTab === 'SCENE' ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                  {getFilteredAssets().map((asset) => {
+                    const isSelected = 
+                      (activeTab === 'ACTOR' && selectedActors.some(a => a.assetId === asset.assetId)) ||
+                      (activeTab === 'SCENE' && selectedScene?.assetId === asset.assetId) ||
+                      (activeTab === 'PROP' && selectedProps.some(p => p.assetId === asset.assetId));
+                    
+                    return (
+                      <div
+                        key={asset.assetId}
+                        onClick={() => !isSelected && handleSelectAsset(asset)}
+                        className={`
+                          rounded-xl overflow-hidden border transition cursor-pointer group
+                          ${isSelected 
+                            ? 'border-accent/50 bg-accent/10 cursor-not-allowed opacity-60' 
+                            : 'border-white/10 hover:border-accent/30 bg-white/5 hover:bg-white/10'}
+                        `}
+                      >
+                        {/* 预览图 */}
+                        <div className={`relative overflow-hidden ${activeTab === 'SCENE' ? 'aspect-video' : 'aspect-square'}`}>
+                          {asset.thumbnailUrl ? (
+                            <img 
+                              src={asset.thumbnailUrl}
+                              alt={asset.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-white/5 grid place-items-center text-2xl">
+                              {activeTab === 'ACTOR' ? '👤' : activeTab === 'SCENE' ? '🏞️' : '🔧'}
+                            </div>
+                          )}
+                          
+                          {/* 已选中标记 */}
+                          {isSelected && (
+                            <div className="absolute inset-0 bg-accent/20 grid place-items-center">
+                              <span className="h-8 w-8 rounded-full bg-accent text-white grid place-items-center">
+                                ✓
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* 信息 */}
+                        <div className="p-3">
+                          <p className="text-white/90 text-sm font-medium truncate">{asset.name}</p>
+                          <p className="text-white/40 text-xs mt-0.5">
+                            使用 {asset.usageCount} 次
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              
+              {!isLoadingAssets && getFilteredAssets().length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-white/40 text-sm">没有找到匹配的资产</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 }
-

@@ -104,10 +104,12 @@ export default function Home() {
             </div>
             <div className="flex flex-wrap gap-3">
               <MagneticElement strength={0.2}>
-                <button className="relative px-5 py-3 rounded-full bg-gradient-to-r from-accent via-red-500 to-white text-white font-semibold shadow-[0_20px_60px_rgba(229,9,20,0.4)] hover:scale-[1.05] transition overflow-hidden glow-pulse">
-                  <span className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.3),transparent_35%)] opacity-60" />
-                  <span className="relative shimmer-text">{content.hero.cta.play}</span>
-                </button>
+                <Link href="/theater/demo">
+                  <button className="relative px-5 py-3 rounded-full bg-gradient-to-r from-accent via-red-500 to-white text-white font-semibold shadow-[0_20px_60px_rgba(229,9,20,0.4)] hover:scale-[1.05] transition overflow-hidden glow-pulse">
+                    <span className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.3),transparent_35%)] opacity-60" />
+                    <span className="relative shimmer-text">{content.hero.cta.play}</span>
+                  </button>
+                </Link>
               </MagneticElement>
               <MagneticElement strength={0.15}>
                 <Link 
