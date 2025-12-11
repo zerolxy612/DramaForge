@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTheaterStore } from '@/lib/stores/theaterStore';
+import type { StoryNode } from '@/lib/types';
 
 interface DemoEndScreenProps {
   dramaId: string;
@@ -63,7 +64,7 @@ export function DemoEndScreen({ dramaId }: DemoEndScreenProps) {
   };
   
   const totalChoices = nodePath.length - 1;
-  const totalDuration = nodePath.reduce((acc, node) => acc + node.confirmedFrame.duration, 0);
+  const totalDuration = nodePath.reduce((acc: number, node: StoryNode) => acc + node.confirmedFrame.duration, 0);
   
   // 彩纸颜色
   const confettiColors = ['#E50914', '#FF6B6B', '#FFE66D', '#4ECDC4', '#9B59B6', '#3498DB'];
@@ -162,16 +163,16 @@ export function DemoEndScreen({ dramaId }: DemoEndScreenProps) {
             <span>🎞️</span> 你执导的分镜
           </h3>
           <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
-            {nodePath.map((node, index) => (
-              <div 
-                key={node.nodeId} 
+            {nodePath.map((node: StoryNode, index: number) => (
+              <div
+                key={node.nodeId}
                 className="flex items-start gap-3 animate-slide-in-up"
                 style={{ animationDelay: `${0.5 + index * 0.1}s` }}
               >
                 <div className={`
                   h-6 w-6 rounded-full grid place-items-center text-xs font-bold flex-shrink-0 mt-0.5
-                  ${index === nodePath.length - 1 
-                    ? 'bg-accent text-white ring-2 ring-accent/30' 
+                  ${index === nodePath.length - 1
+                    ? 'bg-accent text-white ring-2 ring-accent/30'
                     : 'bg-white/10 text-white/60'}
                 `}>
                   {index + 1}

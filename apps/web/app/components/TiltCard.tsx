@@ -8,14 +8,18 @@ interface TiltCardProps {
   glareEnable?: boolean;
   className?: string;
   onClick?: MouseEventHandler<HTMLDivElement>;
+  onMouseEnter?: MouseEventHandler<HTMLDivElement>;
+  onMouseLeave?: MouseEventHandler<HTMLDivElement>;
 }
 
-export function TiltCard({ 
-  children, 
+export function TiltCard({
+  children,
   tiltMaxAngle = 15,
   glareEnable = true,
   className = '',
-  onClick
+  onClick,
+  onMouseEnter,
+  onMouseLeave: onMouseLeaveProp
 }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -43,9 +47,10 @@ export function TiltCard({
     }
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = (e: MouseEvent<HTMLDivElement>) => {
     setTilt({ x: 0, y: 0 });
     setGlare({ x: 50, y: 50, opacity: 0 });
+    onMouseLeaveProp?.(e);
   };
 
   return (
@@ -53,6 +58,7 @@ export function TiltCard({
       ref={ref}
       className={`relative ${className}`}
       onMouseMove={handleMouseMove}
+      onMouseEnter={onMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
       style={{

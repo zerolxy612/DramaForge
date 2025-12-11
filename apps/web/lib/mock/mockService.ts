@@ -174,6 +174,7 @@ export async function refreshCandidates(nodeId: string): Promise<{
   remainingFreeRefresh: number;
   pointsSpent: number;
   customModeTriggered: boolean;
+  error?: string;
 }> {
   await simulateDelay();
   
@@ -184,6 +185,16 @@ export async function refreshCandidates(nodeId: string): Promise<{
   if (session.userPoints.dailyFreeRefresh > 0) {
     session.userPoints.dailyFreeRefresh -= 1;
   } else {
+    // 检查积分是否足够
+    if (session.userPoints.balance < CONFIG.POINTS.REFRESH_COST) {
+      return {
+        candidates: [],
+        remainingFreeRefresh: 0,
+        pointsSpent: 0,
+        customModeTriggered: false,
+        error: '积分不足，无法刷新',
+      };
+    }
     // 消耗积分
     pointsSpent = CONFIG.POINTS.REFRESH_COST;
     session.userPoints.balance -= pointsSpent;
@@ -289,12 +300,21 @@ export async function generateCustomFrame(params: {
   propIds: string[];
   script: string;
 }): Promise<{
-  node: StoryNode;
+  node?: StoryNode;
   pointsSpent: number;
+  error?: string;
 }> {
   await simulateDelay(2000, 3000); // 更长延迟模拟 AI 生成
   
   const session = getSession();
+  
+  // 检查积分是否足够
+  if (session.userPoints.balance < CONFIG.POINTS.CUSTOM_FRAME_COST) {
+    return {
+      pointsSpent: 0,
+      error: '积分不足，无法生成自定义分镜',
+    };
+  }
   
   // 扣除积分
   const pointsSpent = CONFIG.POINTS.CUSTOM_FRAME_COST;

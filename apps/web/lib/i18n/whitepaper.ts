@@ -548,3 +548,4 @@ export function getWhitepaperContent(lang: Language = 'en'): WhitepaperContent {
 
 
 
+

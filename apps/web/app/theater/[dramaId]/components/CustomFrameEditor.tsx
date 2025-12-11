@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useCustomFrameEditorStore, useTheaterStore, useAssetLibraryStore } from '@/lib/stores/theaterStore';
-import type { Asset, AssetType } from '@/lib/types';
+import type { Asset } from '@/lib/types';
+import { AssetType } from '@/lib/types';
 
 interface CustomFrameEditorProps {
   dramaId: string;
@@ -67,41 +68,41 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
   
   const handleSelectAsset = (asset: Asset) => {
     switch (asset.assetType) {
-      case 'ACTOR':
+      case AssetType.ACTOR:
         addActor(asset);
         break;
-      case 'SCENE':
+      case AssetType.SCENE:
         setScene(asset);
         break;
-      case 'PROP':
+      case AssetType.PROP:
         addProp(asset);
         break;
     }
     setActiveTab(null);
     setSearchQuery('');
   };
-  
+
   // 过滤资产
   const getFilteredAssets = (): Asset[] => {
     let assetList: Asset[] = [];
     switch (activeTab) {
-      case 'ACTOR':
+      case AssetType.ACTOR:
         assetList = actors;
         break;
-      case 'SCENE':
+      case AssetType.SCENE:
         assetList = scenes;
         break;
-      case 'PROP':
+      case AssetType.PROP:
         assetList = props;
         break;
       default:
         return [];
     }
-    
+
     if (!searchQuery) return assetList;
-    
+
     const query = searchQuery.toLowerCase();
-    return assetList.filter(asset => 
+    return assetList.filter(asset =>
       asset.name.toLowerCase().includes(query) ||
       asset.description?.toLowerCase().includes(query)
     );
@@ -138,7 +139,7 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
                 <span>👤</span> 角色 <span className="text-accent">*</span>
               </label>
               <button
-                onClick={() => setActiveTab('ACTOR')}
+                onClick={() => setActiveTab(AssetType.ACTOR)}
                 className="text-xs text-accent hover:underline flex items-center gap-1"
               >
                 <span>+</span> 添加角色
@@ -146,14 +147,14 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
             </div>
             <div className="flex flex-wrap gap-2">
               {selectedActors.length > 0 ? (
-                selectedActors.map((actor) => (
+                selectedActors.map((actor: Asset) => (
                   <div
                     key={actor.assetId}
                     className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/20 group hover:border-accent/30 transition"
                   >
                     {actor.thumbnailUrl && (
-                      <img 
-                        src={actor.thumbnailUrl} 
+                      <img
+                        src={actor.thumbnailUrl}
                         alt={actor.name}
                         className="h-6 w-6 rounded-full object-cover"
                       />
@@ -180,7 +181,7 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
                 <span>🏞️</span> 场景 <span className="text-accent">*</span>
               </label>
               <button
-                onClick={() => setActiveTab('SCENE')}
+                onClick={() => setActiveTab(AssetType.SCENE)}
                 className="text-xs text-accent hover:underline flex items-center gap-1"
               >
                 {selectedScene ? '更换场景' : <><span>+</span> 选择场景</>}
@@ -218,7 +219,7 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
                 <span>🔧</span> 道具 <span className="text-white/40 text-xs">(可选)</span>
               </label>
               <button
-                onClick={() => setActiveTab('PROP')}
+                onClick={() => setActiveTab(AssetType.PROP)}
                 className="text-xs text-accent hover:underline flex items-center gap-1"
               >
                 <span>+</span> 添加道具
@@ -226,14 +227,14 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
             </div>
             <div className="flex flex-wrap gap-2">
               {selectedProps.length > 0 ? (
-                selectedProps.map((prop) => (
+                selectedProps.map((prop: Asset) => (
                   <div
                     key={prop.assetId}
                     className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/20 group hover:border-accent/30 transition"
                   >
                     {prop.thumbnailUrl && (
-                      <img 
-                        src={prop.thumbnailUrl} 
+                      <img
+                        src={prop.thumbnailUrl}
                         alt={prop.name}
                         className="h-5 w-5 rounded object-cover"
                       />
@@ -345,7 +346,7 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
                 
                 {/* 角色叠加 */}
                 <div className="absolute bottom-0 left-0 right-0 h-2/3 flex items-end justify-center pb-0 gap-4">
-                   {selectedActors.map((actor, idx) => (
+                   {selectedActors.map((actor: Asset, idx: number) => (
                       <div key={actor.assetId} className="relative w-24 h-24 mb-[-10px] transition-all hover:translate-y-[-5px]">
                           {actor.thumbnailUrl && (
                              <img src={actor.thumbnailUrl} className="w-full h-full object-cover rounded-t-xl border-2 border-white/20 shadow-[0_0_20px_rgba(0,0,0,0.5)]" />
@@ -425,10 +426,10 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
             <div className="p-5 border-b border-white/10">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                  {activeTab === 'ACTOR' && <span>👤</span>}
-                  {activeTab === 'SCENE' && <span>🏞️</span>}
-                  {activeTab === 'PROP' && <span>🔧</span>}
-                  选择{activeTab === 'ACTOR' ? '角色' : activeTab === 'SCENE' ? '场景' : '道具'}
+                  {activeTab === AssetType.ACTOR && <span>👤</span>}
+                  {activeTab === AssetType.SCENE && <span>🏞️</span>}
+                  {activeTab === AssetType.PROP && <span>🔧</span>}
+                  选择{activeTab === AssetType.ACTOR ? '角色' : activeTab === AssetType.SCENE ? '场景' : '道具'}
                 </h3>
                 <button
                   onClick={() => {
@@ -464,35 +465,35 @@ export function CustomFrameEditor({ dramaId }: CustomFrameEditorProps) {
                   <p className="text-white/60 text-sm">加载资产中...</p>
                 </div>
               ) : (
-                <div className={`grid gap-3 ${activeTab === 'SCENE' ? 'grid-cols-1' : 'grid-cols-2'}`}>
-                  {getFilteredAssets().map((asset) => {
-                    const isSelected = 
-                      (activeTab === 'ACTOR' && selectedActors.some(a => a.assetId === asset.assetId)) ||
-                      (activeTab === 'SCENE' && selectedScene?.assetId === asset.assetId) ||
-                      (activeTab === 'PROP' && selectedProps.some(p => p.assetId === asset.assetId));
-                    
+                <div className={`grid gap-3 ${activeTab === AssetType.SCENE ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                  {getFilteredAssets().map((asset: Asset) => {
+                    const isSelected =
+                      (activeTab === AssetType.ACTOR && selectedActors.some((a: Asset) => a.assetId === asset.assetId)) ||
+                      (activeTab === AssetType.SCENE && selectedScene?.assetId === asset.assetId) ||
+                      (activeTab === AssetType.PROP && selectedProps.some((p: Asset) => p.assetId === asset.assetId));
+
                     return (
                       <div
                         key={asset.assetId}
                         onClick={() => !isSelected && handleSelectAsset(asset)}
                         className={`
                           rounded-xl overflow-hidden border transition cursor-pointer group
-                          ${isSelected 
-                            ? 'border-accent/50 bg-accent/10 cursor-not-allowed opacity-60' 
+                          ${isSelected
+                            ? 'border-accent/50 bg-accent/10 cursor-not-allowed opacity-60'
                             : 'border-white/10 hover:border-accent/30 bg-white/5 hover:bg-white/10'}
                         `}
                       >
                         {/* 预览图 */}
-                        <div className={`relative overflow-hidden ${activeTab === 'SCENE' ? 'aspect-video' : 'aspect-square'}`}>
+                        <div className={`relative overflow-hidden ${activeTab === AssetType.SCENE ? 'aspect-video' : 'aspect-square'}`}>
                           {asset.thumbnailUrl ? (
-                            <img 
+                            <img
                               src={asset.thumbnailUrl}
                               alt={asset.name}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (
                             <div className="w-full h-full bg-white/5 grid place-items-center text-2xl">
-                              {activeTab === 'ACTOR' ? '👤' : activeTab === 'SCENE' ? '🏞️' : '🔧'}
+                              {activeTab === AssetType.ACTOR ? '👤' : activeTab === AssetType.SCENE ? '🏞️' : '🔧'}
                             </div>
                           )}
                           

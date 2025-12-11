@@ -1,27 +1,37 @@
-/node_modules
-/.next
+# Dependencies
+node_modules
+**/node_modules
+.pnpm-store
+
+# Next.js build output
+.next
+**/.next
 /out
+
+# Build artifacts
 /artifacts
 /cache
+/contracts/artifacts
+/contracts/cache
+*.tsbuildinfo
+
+# Coverage
 /coverage
-/.env
-/.env.local
-/.env.development.local
-/.env.test.local
-/.env.production.local
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Lock files (using pnpm)
 pnpm-lock.yaml
 yarn.lock
 package-lock.json
+
+# OS & IDE
 .DS_Store
-*.tsbuildinfo
 /.turbo
 /.idea
 /.vscode
-
-# Next.js build output in nested apps
-**/.next
-
-# Nested dependencies and build artifacts
-**/node_modules
-/contracts/artifacts
-/contracts/cache
