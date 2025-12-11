@@ -219,6 +219,7 @@ export const STORY_NODES: Record<string, StoryNode> = {
       propIds: ['prop-chip'],
       script: '酸雨敲打着全息广告牌，K站在霓虹灯下。他低头看着手中微微发光的芯片——这东西刚从一个死人手里滑落。远处，警笛声越来越近。',
       thumbnailUrl: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=450&fit=crop',
+      videoUrl: '/images/c769b14d5dce1be8661a0719b23e6fe8.mp4',
     },
     contributor: '0x0000000000000000000000000000000000000000' as `0x${string}`,
     timestamp: new Date(),

@@ -13,13 +13,13 @@ export function AssetPreview({ frame }: AssetPreviewProps) {
   const assets = useMemo(() => {
     if (!frame) return { actors: [], scene: null, props: [] };
     
-    const actors = frame.actorIds
+    const actors = (frame.actorIds || [])
       .map(id => getAssetById(id))
       .filter(Boolean);
     
     const scene = frame.sceneId ? getAssetById(frame.sceneId) : null;
     
-    const props = frame.propIds
+    const props = (frame.propIds || [])
       .map(id => getAssetById(id))
       .filter(Boolean);
     

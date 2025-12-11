@@ -90,6 +90,32 @@ export default function Home() {
             <p className="text-lg text-white/80 max-w-2xl leading-relaxed">
               {content.hero.description}
             </p>
+
+            {/* AIGC 灵感输入框 (参考参考图1) */}
+            <MagneticElement strength={0.1}>
+              <div className="relative w-full max-w-xl group z-20">
+                <div className="absolute inset-0 bg-gradient-to-r from-accent/30 to-purple-600/30 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative flex items-center bg-black/40 backdrop-blur-xl border border-white/15 rounded-2xl p-2 focus-within:border-accent/50 focus-within:bg-black/60 transition-all duration-300">
+                  <div className="pl-4 pr-3 text-accent animate-pulse">✨</div>
+                  <input 
+                    type="text" 
+                    placeholder="有什么新的故事灵感？AI 自动为你策划..."
+                    className="flex-1 bg-transparent border-none text-white placeholder-white/30 focus:outline-none text-sm h-11"
+                  />
+                  <div className="flex items-center gap-2 pr-1">
+                     <span className="hidden sm:inline-block px-2 py-1 rounded text-[10px] bg-white/5 text-white/30 border border-white/5">
+                        ↵ Enter
+                     </span>
+                     <button className="h-9 w-9 rounded-xl bg-white/10 hover:bg-accent hover:text-white text-white/60 transition-all grid place-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                          <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
+                        </svg>
+                     </button>
+                  </div>
+                </div>
+              </div>
+            </MagneticElement>
+
             <div className="glass-veil rounded-2xl p-4 flex gap-3 items-start relative overflow-hidden">
               <div className="absolute inset-0 scan-line opacity-20" />
               <div className="h-11 w-11 rounded-full bg-black/60 border border-white/15 grid place-items-center text-white text-lg pulse-glow">
