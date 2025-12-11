@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { ParticleBackground } from '@/app/components/ParticleBackground';
 import { TiltCard } from '@/app/components/TiltCard';
 import { DEMO_ASSETS, STORY_NODES } from '@/lib/mock';
-import type { Asset, AssetType } from '@/lib/types';
+import { Asset, AssetType } from '@/lib/types';
 
 type FilterType = 'ALL' | AssetType;
 
@@ -64,9 +64,9 @@ export default function AssetsPage() {
     const all = Object.values(DEMO_ASSETS);
     return {
       total: all.length,
-      actors: all.filter(a => a.assetType === 'ACTOR').length,
-      scenes: all.filter(a => a.assetType === 'SCENE').length,
-      props: all.filter(a => a.assetType === 'PROP').length,
+      actors: all.filter(a => a.assetType === AssetType.ACTOR).length,
+      scenes: all.filter(a => a.assetType === AssetType.SCENE).length,
+      props: all.filter(a => a.assetType === AssetType.PROP).length,
       totalUsage: all.reduce((sum, a) => sum + a.usageCount, 0),
     };
   }, []);
@@ -118,15 +118,15 @@ export default function AssetsPage() {
               <div className="text-2xl font-bold text-white">{stats.total}</div>
               <div className="text-white/50 text-sm">全部资产</div>
             </div>
-            <div className="glass rounded-xl p-4 text-center hover:border-accent/30 transition cursor-pointer" onClick={() => setFilter('ACTOR')}>
+            <div className="glass rounded-xl p-4 text-center hover:border-accent/30 transition cursor-pointer" onClick={() => setFilter(AssetType.ACTOR)}>
               <div className="text-2xl font-bold text-accent">{stats.actors}</div>
               <div className="text-white/50 text-sm">👤 角色</div>
             </div>
-            <div className="glass rounded-xl p-4 text-center hover:border-accent/30 transition cursor-pointer" onClick={() => setFilter('SCENE')}>
+            <div className="glass rounded-xl p-4 text-center hover:border-accent/30 transition cursor-pointer" onClick={() => setFilter(AssetType.SCENE)}>
               <div className="text-2xl font-bold text-purple-400">{stats.scenes}</div>
               <div className="text-white/50 text-sm">🏞️ 场景</div>
             </div>
-            <div className="glass rounded-xl p-4 text-center hover:border-accent/30 transition cursor-pointer" onClick={() => setFilter('PROP')}>
+            <div className="glass rounded-xl p-4 text-center hover:border-accent/30 transition cursor-pointer" onClick={() => setFilter(AssetType.PROP)}>
               <div className="text-2xl font-bold text-cyan-400">{stats.props}</div>
               <div className="text-white/50 text-sm">🔧 道具</div>
             </div>
@@ -166,8 +166,8 @@ export default function AssetsPage() {
                     }`}
                   >
                     {type === 'ALL' ? '全部' : 
-                     type === 'ACTOR' ? '👤 角色' : 
-                     type === 'SCENE' ? '🏞️ 场景' : '🔧 道具'}
+                     type === AssetType.ACTOR ? '👤 角色' : 
+                     type === AssetType.SCENE ? '🏞️ 场景' : '🔧 道具'}
                   </button>
                 ))}
               </div>
@@ -215,7 +215,7 @@ export default function AssetsPage() {
                     onClick={() => setSelectedAsset(asset)}
                   >
                     {/* 缩略图 */}
-                    <div className={`relative overflow-hidden ${asset.assetType === 'SCENE' ? 'aspect-video' : 'aspect-square'}`}>
+                    <div className={`relative overflow-hidden ${asset.assetType === AssetType.SCENE ? 'aspect-video' : 'aspect-square'}`}>
                       <img
                         src={asset.thumbnailUrl}
                         alt={asset.name}
@@ -225,12 +225,12 @@ export default function AssetsPage() {
                       {/* 类型标签 */}
                       <div className={`
                         absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-medium
-                        ${asset.assetType === 'ACTOR' ? 'bg-accent/80' : 
-                          asset.assetType === 'SCENE' ? 'bg-purple-500/80' : 'bg-cyan-500/80'}
+                        ${asset.assetType === AssetType.ACTOR ? 'bg-accent/80' : 
+                          asset.assetType === AssetType.SCENE ? 'bg-purple-500/80' : 'bg-cyan-500/80'}
                         text-white
                       `}>
-                        {asset.assetType === 'ACTOR' ? '👤 角色' : 
-                         asset.assetType === 'SCENE' ? '🏞️ 场景' : '🔧 道具'}
+                        {asset.assetType === AssetType.ACTOR ? '👤 角色' : 
+                         asset.assetType === AssetType.SCENE ? '🏞️ 场景' : '🔧 道具'}
                       </div>
                       
                       {/* 使用次数 */}
@@ -265,7 +265,7 @@ export default function AssetsPage() {
                     <img
                       src={asset.thumbnailUrl}
                       alt={asset.name}
-                      className={`object-cover rounded-lg ${asset.assetType === 'SCENE' ? 'w-24 h-16' : 'w-16 h-16'}`}
+                      className={`object-cover rounded-lg ${asset.assetType === AssetType.SCENE ? 'w-24 h-16' : 'w-16 h-16'}`}
                     />
                     <div className="flex-1 min-w-0">
                       <h3 className="text-white font-medium">{asset.name}</h3>
@@ -273,10 +273,10 @@ export default function AssetsPage() {
                     </div>
                     <div className={`
                       px-3 py-1 rounded-full text-xs font-medium
-                      ${asset.assetType === 'ACTOR' ? 'bg-accent/20 text-accent' : 
-                        asset.assetType === 'SCENE' ? 'bg-purple-500/20 text-purple-400' : 'bg-cyan-500/20 text-cyan-400'}
+                      ${asset.assetType === AssetType.ACTOR ? 'bg-accent/20 text-accent' : 
+                        asset.assetType === AssetType.SCENE ? 'bg-purple-500/20 text-purple-400' : 'bg-cyan-500/20 text-cyan-400'}
                     `}>
-                      {asset.assetType === 'ACTOR' ? '角色' : asset.assetType === 'SCENE' ? '场景' : '道具'}
+                      {asset.assetType === AssetType.ACTOR ? '角色' : asset.assetType === AssetType.SCENE ? '场景' : '道具'}
                     </div>
                     <div className="text-white/40 text-sm">
                       🔄 {asset.usageCount}
@@ -298,11 +298,11 @@ export default function AssetsPage() {
                 <div className="flex items-center justify-between">
                   <span className={`
                     px-3 py-1 rounded-full text-xs font-medium
-                    ${selectedAsset.assetType === 'ACTOR' ? 'bg-accent/20 text-accent' : 
-                      selectedAsset.assetType === 'SCENE' ? 'bg-purple-500/20 text-purple-400' : 'bg-cyan-500/20 text-cyan-400'}
+                    ${selectedAsset.assetType === AssetType.ACTOR ? 'bg-accent/20 text-accent' : 
+                      selectedAsset.assetType === AssetType.SCENE ? 'bg-purple-500/20 text-purple-400' : 'bg-cyan-500/20 text-cyan-400'}
                   `}>
-                    {selectedAsset.assetType === 'ACTOR' ? '👤 角色' : 
-                     selectedAsset.assetType === 'SCENE' ? '🏞️ 场景' : '🔧 道具'}
+                    {selectedAsset.assetType === AssetType.ACTOR ? '👤 角色' : 
+                     selectedAsset.assetType === AssetType.SCENE ? '🏞️ 场景' : '🔧 道具'}
                   </span>
                   <button
                     onClick={() => setSelectedAsset(null)}
@@ -317,7 +317,7 @@ export default function AssetsPage() {
                   <img
                     src={selectedAsset.thumbnailUrl}
                     alt={selectedAsset.name}
-                    className={`w-full object-cover ${selectedAsset.assetType === 'SCENE' ? 'aspect-video' : 'aspect-square'}`}
+                    className={`w-full object-cover ${selectedAsset.assetType === AssetType.SCENE ? 'aspect-video' : 'aspect-square'}`}
                   />
                 </div>
                 
