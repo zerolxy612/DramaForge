@@ -567,6 +567,20 @@ export const CANDIDATE_FRAMES: Record<string, CandidateFrame[]> = {
       pendingAssets: [],
       isEditable: false,
     },
+    {
+      candidateId: 'cand-2c-3',
+      frameData: {
+        frameCid: 'QmCand2C3',
+        duration: 5,
+        actorIds: ['actor-k'],
+        sceneId: 'scene-neon-street',
+        propIds: ['prop-chip'],
+        script: '✨ [自定义分镜] 芯片回到手中的那一刻，你做出了一个意想不到的决定...',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=800&h=450&fit=crop',
+      },
+      pendingAssets: [],
+      isEditable: true,
+    },
   ],
 
   // 第2幕B -> 第3幕的选项
@@ -645,6 +659,20 @@ export const CANDIDATE_FRAMES: Record<string, CandidateFrame[]> = {
       pendingAssets: [],
       isEditable: false,
     },
+    {
+      candidateId: 'cand-3a-fight-3',
+      frameData: {
+        frameCid: 'QmCand3AFight3',
+        duration: 5,
+        actorIds: ['actor-k', 'actor-glitch'],
+        sceneId: 'scene-cyber-bar',
+        propIds: ['prop-chip', 'prop-holo'],
+        script: '✨ [自定义分镜] 在枪林弹雨中，你想出了一个疯狂的计划...',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=800&h=450&fit=crop',
+      },
+      pendingAssets: [],
+      isEditable: true,
+    },
   ],
 
   'node-3a-escape': [
@@ -675,6 +703,20 @@ export const CANDIDATE_FRAMES: Record<string, CandidateFrame[]> = {
       },
       pendingAssets: [],
       isEditable: false,
+    },
+    {
+      candidateId: 'cand-3a-escape-3',
+      frameData: {
+        frameCid: 'QmCand3AEscape3',
+        duration: 5,
+        actorIds: ['actor-k', 'actor-glitch'],
+        sceneId: 'scene-alley',
+        propIds: ['prop-holo'],
+        script: '✨ [自定义分镜] 在逃亡途中，你们发现了一条意想不到的出路...',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=800&h=450&fit=crop',
+      },
+      pendingAssets: [],
+      isEditable: true,
     },
   ],
 
@@ -707,6 +749,20 @@ export const CANDIDATE_FRAMES: Record<string, CandidateFrame[]> = {
       pendingAssets: [],
       isEditable: false,
     },
+    {
+      candidateId: 'cand-3b-inv-3',
+      frameData: {
+        frameCid: 'QmCand3BInv3',
+        duration: 5,
+        actorIds: ['actor-k', 'actor-whisper'],
+        sceneId: 'scene-alley',
+        propIds: ['prop-chip'],
+        script: '✨ [自定义分镜] 在真相面前，你决定采取一个更激进的行动...',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=800&h=450&fit=crop',
+      },
+      pendingAssets: [],
+      isEditable: true,
+    },
   ],
 
   // 第3幕C -> 第4幕（量子觉醒后的选择）
@@ -738,6 +794,20 @@ export const CANDIDATE_FRAMES: Record<string, CandidateFrame[]> = {
       },
       pendingAssets: [],
       isEditable: false,
+    },
+    {
+      candidateId: 'cand-3c-3',
+      frameData: {
+        frameCid: 'QmCand3C3',
+        duration: 5,
+        actorIds: ['actor-k'],
+        sceneId: 'scene-neon-street',
+        propIds: ['prop-chip', 'prop-neural'],
+        script: '✨ [自定义分镜] 量子AI与你的意识开始融合，你们将共同创造新的可能...',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=800&h=450&fit=crop',
+      },
+      pendingAssets: [],
+      isEditable: true,
     },
   ],
 
@@ -811,16 +881,21 @@ export const CHOICE_TO_NODE: Record<string, string> = {
   // 第2幕C选择（丢弃芯片分支）
   'cand-2c-1': 'node-3c-quantum',
   'cand-2c-2': 'node-3a-fight',  // 合流到战斗节点
+  'cand-2c-3': 'node-custom',    // 自定义
   
   // 第3幕选择 -> 第4幕
   'cand-3a-fight-1': 'node-4-climax',
   'cand-3a-fight-2': 'node-4-climax',
+  'cand-3a-fight-3': 'node-custom',  // 自定义
   'cand-3a-escape-1': 'node-4-climax',
   'cand-3a-escape-2': 'node-4-climax',
+  'cand-3a-escape-3': 'node-custom', // 自定义
   'cand-3b-inv-1': 'node-4-climax',
   'cand-3b-inv-2': 'node-4-climax',
+  'cand-3b-inv-3': 'node-custom',    // 自定义
   'cand-3c-1': 'node-4-climax',
   'cand-3c-2': 'node-4-climax',
+  'cand-3c-3': 'node-custom',        // 自定义
   
   // 第4幕选择 -> 结局
   'cand-4-1': 'node-5-ending',

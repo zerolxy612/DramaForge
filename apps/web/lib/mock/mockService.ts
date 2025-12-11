@@ -91,14 +91,28 @@ let sessionState: MockSessionState | null = null;
 
 function initSession(): MockSessionState {
   const drama = deepClone(DEMO_DRAMA);
-  const rootNode = deepClone(STORY_NODES['node-root']);
+  
+  // 为了演示效果，预设已经走过几个节点
+  const node1 = deepClone(STORY_NODES['node-root']);
+  const node2 = deepClone(STORY_NODES['node-2a']);
+  const node3 = deepClone(STORY_NODES['node-3a-fight']);
+  
+  // 当前节点是第3个，下一步将选择第4幕
+  const currentNode = node3;
+  const nodePath = [node1, node2, node3];
+  
+  // 计算总时长
+  const totalDuration = nodePath.reduce((sum, n) => sum + n.confirmedFrame.duration, 0);
+  
+  // 更新剧集已进行时长
+  drama.currentDuration = totalDuration;
   
   return {
     currentDrama: drama,
-    currentNode: rootNode,
-    nodePath: [rootNode],
+    currentNode: currentNode,
+    nodePath: nodePath,
     userPoints: deepClone(DEMO_USER_POINTS),
-    totalDuration: rootNode.confirmedFrame.duration,
+    totalDuration: totalDuration,
   };
 }
 
@@ -123,17 +137,19 @@ export function resetSession(): void {
 export async function loadDrama(): Promise<{
   drama: Drama;
   currentNode: StoryNode;
+  nodePath: StoryNode[];
   candidates: CandidateFrame[];
   userPoints: UserPoints;
 }> {
   await simulateDelay();
-  
+
   const session = getSession();
   const candidates = getCandidatesWithCustomChance(session.currentNode.nodeId);
-  
+
   return {
     drama: session.currentDrama,
     currentNode: session.currentNode,
+    nodePath: session.nodePath,
     candidates,
     userPoints: session.userPoints,
   };

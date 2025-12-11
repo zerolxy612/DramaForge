@@ -13,6 +13,7 @@ import { DemoEndScreen } from './components/DemoEndScreen';
 import { PointsToast } from './components/PointsToast';
 import { OnChainConfirmation } from './components/OnChainConfirmation';
 import { FilmStripPreview } from './components/FilmStripPreview';
+import { WalletPanel } from './components/WalletPanel';
 
 type PlayPhase = 'intro' | 'watching' | 'choosing' | 'transitioning';
 
@@ -136,6 +137,9 @@ export default function TheaterPage() {
   
   return (
     <div className="absolute inset-0 bg-black overflow-hidden">
+      {/* 钱包面板 */}
+      <WalletPanel />
+      
       {/* 开场动画 */}
       {phase === 'intro' && currentDrama && (
         <CinematicIntro
@@ -190,7 +194,7 @@ export default function TheaterPage() {
             <FilmStripPreview
               nodePath={nodePath}
               isChoosing={true}
-              totalFrames={5}
+              totalFrames={6}
             />
           </div>
         </div>

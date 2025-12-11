@@ -93,40 +93,40 @@ export function DirectorChoicePanel({
       transition-all duration-500 ease-out
       ${showPanel ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}
     `}>
-      {/* 背景渐变遮罩 */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/95 to-transparent -top-32" />
+      {/* 背景渐变遮罩 - 减少向上扩展 */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/95 to-transparent -top-16" />
       
-      <div className="relative px-6 pb-8 pt-16">
+      <div className="relative px-6 pb-6 pt-8">
         <div className="max-w-5xl mx-auto">
           {/* 标题区 */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
               {/* 倒计时圆环 */}
-              <div className="relative w-12 h-12">
-                <svg className="w-12 h-12 -rotate-90">
+              <div className="relative w-10 h-10">
+                <svg className="w-10 h-10 -rotate-90">
                   <circle
-                    cx="24"
-                    cy="24"
-                    r="20"
+                    cx="20"
+                    cy="20"
+                    r="16"
                     fill="none"
                     stroke="rgba(255,255,255,0.1)"
                     strokeWidth="3"
                   />
                   <circle
-                    cx="24"
-                    cy="24"
-                    r="20"
+                    cx="20"
+                    cy="20"
+                    r="16"
                     fill="none"
                     stroke={countdown <= 5 ? '#ef4444' : '#E50914'}
                     strokeWidth="3"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={strokeDashoffset}
+                    strokeDasharray={2 * Math.PI * 16}
+                    strokeDashoffset={(2 * Math.PI * 16) - (countdown / 15) * (2 * Math.PI * 16)}
                     className="transition-all duration-1000"
                     strokeLinecap="round"
                   />
                 </svg>
                 <span className={`
-                  absolute inset-0 flex items-center justify-center text-sm font-bold
+                  absolute inset-0 flex items-center justify-center text-xs font-bold
                   ${countdown <= 5 ? 'text-red-400' : 'text-white'}
                 `}>
                   {countdown}
@@ -134,10 +134,9 @@ export function DirectorChoicePanel({
               </div>
               
               <div>
-                <h2 className="text-xl font-display font-bold text-white">
-                  执导下一幕
+                <h2 className="text-lg font-display font-bold text-white">
+                  选择你想要的剧情走向
                 </h2>
-                <p className="text-white/50 text-sm">选择你想要的剧情走向</p>
               </div>
             </div>
             
@@ -145,15 +144,15 @@ export function DirectorChoicePanel({
             <button
               onClick={handleRefresh}
               disabled={isGenerating || isConfirming}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10 hover:bg-white/20 transition disabled:opacity-50"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 hover:bg-white/20 transition disabled:opacity-50"
             >
-              <span className={isGenerating ? 'animate-spin' : ''}>🎲</span>
-              <span className="text-white/70 text-sm">换一批 ({remainingFreeRefresh})</span>
+              <span className={`text-sm ${isGenerating ? 'animate-spin' : ''}`}>🎲</span>
+              <span className="text-white/70 text-xs">换一批 ({remainingFreeRefresh})</span>
             </button>
           </div>
           
           {/* 选项卡片 - 横向排列 */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
             {frames.map((frame, index) => {
               const isSelected = selectedFrame?.candidateId === frame.candidateId;
               const isHovered = hoveredIndex === index;

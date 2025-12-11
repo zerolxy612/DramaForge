@@ -159,14 +159,14 @@ export const useTheaterStore = create<TheaterState>((set, get) => ({
   // ========== 加载 Demo ==========
   loadMockDrama: async () => {
     set({ isLoading: true });
-    
+
     try {
-      const { drama, currentNode, candidates, userPoints } = await loadDrama();
-      
+      const { drama, currentNode, nodePath, candidates, userPoints } = await loadDrama();
+
       set({
         currentDrama: drama,
         currentNode: currentNode,
-        nodePath: [currentNode],
+        nodePath: nodePath,
         candidateFrames: candidates,
         userPoints: userPoints,
         isLoading: false,
