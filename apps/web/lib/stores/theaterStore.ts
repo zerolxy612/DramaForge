@@ -267,6 +267,14 @@ export const useTheaterStore = create<TheaterState>((set, get) => ({
     try {
       const result = await refreshCandidates(currentNode.nodeId);
       
+      // 处理错误（积分不足）
+      if (result.error) {
+        console.warn('Refresh failed:', result.error);
+        set({ isGenerating: false });
+        // 可以在这里触发一个 toast 通知
+        return;
+      }
+      
       // 显示积分变化
       if (result.pointsSpent > 0) {
         set({ pointsChange: { amount: result.pointsSpent, type: 'spend' } });
@@ -298,12 +306,23 @@ export const useTheaterStore = create<TheaterState>((set, get) => ({
     try {
       const result = await generateCustomFrame(params);
       
+      // 处理错误（积分不足）
+      if (result.error || !result.node) {
+        console.warn('Custom frame generation failed:', result.error);
+        set({ isGenerating: false });
+        // 可以在这里触发一个 toast 通知
+        return;
+      }
+      
       // 显示积分变化
       set({ pointsChange: { amount: result.pointsSpent, type: 'spend' } });
       setTimeout(() => set({ pointsChange: null }), 2000);
       
-      // 获取下一幕的候选（自定义节点后可能继续或结束）
+      // 获取下一幕的候选（自定义节点后继续提供选项）
       const nextCandidates = await getNextCandidates();
+      
+      // 判断是否真正结束（只有当深度>=5且没有候选时才结束）
+      const isDemoEnd = result.node.depth >= 5 && nextCandidates.length === 0;
       
       set({
         currentNode: result.node,
@@ -316,8 +335,7 @@ export const useTheaterStore = create<TheaterState>((set, get) => ({
         } : null,
         isGenerating: false,
         isCustomMode: false,
-        // 自定义分镜后结束 Demo
-        isDemoEnd: true,
+        isDemoEnd,
       });
     } catch (error) {
       console.error('Failed to generate custom frame:', error);

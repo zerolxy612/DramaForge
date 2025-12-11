@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import type { FrameData } from '@/lib/types';
 import { getAssetById } from '@/lib/mock';
 
@@ -14,73 +14,41 @@ export function CinematicPlayer({ frame, isPlaying, onPlayComplete }: CinematicP
   const [progress, setProgress] = useState(0);
   const [showScript, setShowScript] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const duration = frame?.duration ?? 5;
   
   // 场景和角色资产
   const scene = frame?.sceneId ? getAssetById(frame.sceneId) : null;
   const actors = frame?.actorIds.map(id => getAssetById(id)).filter(Boolean) || [];
   
-  // 是否有视频
-  const hasVideo = !!frame?.videoUrl;
-  
   useEffect(() => {
     if (!isPlaying || !frame) return;
     
     // 开场揭幕效果
     setIsRevealed(false);
-    setIsVideoLoaded(false);
     const revealTimer = setTimeout(() => setIsRevealed(true), 100);
     
     // 显示脚本
     const scriptTimer = setTimeout(() => setShowScript(true), 800);
     
-    // 如果有视频，等待视频播放
-    if (hasVideo && videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(console.error);
-    }
-    
-    // 进度条（图片模式用计时器，视频模式由视频控制）
-    if (!hasVideo) {
-      setProgress(0);
-      const interval = setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            onPlayComplete?.();
-            return 100;
-          }
-          return prev + (100 / (duration * 20));
-        });
-      }, 50);
-      
-      return () => {
-        clearTimeout(revealTimer);
-        clearTimeout(scriptTimer);
-        clearInterval(interval);
-      };
-    }
+    // 进度条
+    setProgress(0);
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          onPlayComplete?.();
+          return 100;
+        }
+        return prev + (100 / (duration * 20));
+      });
+    }, 50);
     
     return () => {
       clearTimeout(revealTimer);
       clearTimeout(scriptTimer);
+      clearInterval(interval);
     };
-  }, [isPlaying, frame, duration, onPlayComplete, hasVideo]);
-  
-  // 视频时间更新
-  const handleVideoTimeUpdate = () => {
-    if (videoRef.current) {
-      const videoProgress = (videoRef.current.currentTime / videoRef.current.duration) * 100;
-      setProgress(videoProgress);
-    }
-  };
-  
-  // 视频加载完成
-  const handleVideoLoaded = () => {
-    setIsVideoLoaded(true);
-  };
+  }, [isPlaying, frame, duration, onPlayComplete]);
   
   // 占位状态
   if (!frame) {
@@ -112,34 +80,9 @@ export function CinematicPlayer({ frame, isPlaying, onPlayComplete }: CinematicP
         transition-all duration-1000
         ${isRevealed ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
       `}>
-        {/* 场景背景 - 支持视频 */}
+        {/* 场景背景 - 图片 */}
         <div className="absolute inset-0">
-          {hasVideo ? (
-            <>
-              {/* 视频播放器 */}
-              <video
-                ref={videoRef}
-                src={frame.videoUrl}
-                className={`
-                  w-full h-full object-cover
-                  transition-opacity duration-500
-                  ${isVideoLoaded ? 'opacity-100' : 'opacity-0'}
-                `}
-                muted
-                playsInline
-                onLoadedData={handleVideoLoaded}
-                onTimeUpdate={handleVideoTimeUpdate}
-              />
-              {/* 视频加载时的封面 */}
-              {!isVideoLoaded && frame.thumbnailUrl && (
-                <img
-                  src={frame.thumbnailUrl}
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              )}
-            </>
-          ) : frame.thumbnailUrl || scene?.thumbnailUrl ? (
+          {frame.thumbnailUrl || scene?.thumbnailUrl ? (
             <img
               src={frame.thumbnailUrl || scene?.thumbnailUrl}
               alt=""
@@ -219,12 +162,6 @@ export function CinematicPlayer({ frame, isPlaying, onPlayComplete }: CinematicP
           </div>
           <span>|</span>
           <span>FRAME {String(Math.floor(progress / 5)).padStart(4, '0')}</span>
-          {hasVideo && (
-            <>
-              <span>|</span>
-              <span className="text-accent">🎬 VIDEO</span>
-            </>
-          )}
         </div>
         
         {/* 分镜编号 */}

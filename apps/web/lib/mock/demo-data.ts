@@ -25,7 +25,7 @@ export const DEMO_DRAMA: Drama = {
 
 export const DEMO_ASSETS: Record<string, Asset> = {
   // ========== 角色 ==========
-  detective: {
+  'actor-k': {
     assetId: 'actor-k',
     assetType: AssetType.ACTOR,
     name: 'K (赛博侦探)',
@@ -38,7 +38,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
     usageCount: 1205,
     createdAt: new Date(),
   },
-  hacker: {
+  'actor-glitch': {
     assetId: 'actor-glitch',
     assetType: AssetType.ACTOR,
     name: 'Glitch (黑客女王)',
@@ -51,7 +51,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
     usageCount: 890,
     createdAt: new Date(),
   },
-  corporate: {
+  'actor-vega': {
     assetId: 'actor-vega',
     assetType: AssetType.ACTOR,
     name: 'Vega (公司杀手)',
@@ -64,7 +64,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
     usageCount: 567,
     createdAt: new Date(),
   },
-  informant: {
+  'actor-whisper': {
     assetId: 'actor-whisper',
     assetType: AssetType.ACTOR,
     name: 'Whisper (线人)',
@@ -79,7 +79,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
   },
 
   // ========== 场景 ==========
-  neonStreet: {
+  'scene-neon-street': {
     assetId: 'scene-neon-street',
     assetType: AssetType.SCENE,
     name: '霓虹雨街',
@@ -92,7 +92,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
     usageCount: 2341,
     createdAt: new Date(),
   },
-  cyberBar: {
+  'scene-cyber-bar': {
     assetId: 'scene-cyber-bar',
     assetType: AssetType.SCENE,
     name: '赛博酒吧 "黑镜"',
@@ -105,7 +105,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
     usageCount: 1890,
     createdAt: new Date(),
   },
-  rooftop: {
+  'scene-rooftop': {
     assetId: 'scene-rooftop',
     assetType: AssetType.SCENE,
     name: '摩天楼天台',
@@ -118,7 +118,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
     usageCount: 456,
     createdAt: new Date(),
   },
-  serverRoom: {
+  'scene-server-room': {
     assetId: 'scene-server-room',
     assetType: AssetType.SCENE,
     name: '数据中心核心',
@@ -131,7 +131,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
     usageCount: 234,
     createdAt: new Date(),
   },
-  alley: {
+  'scene-alley': {
     assetId: 'scene-alley',
     assetType: AssetType.SCENE,
     name: '暗巷',
@@ -146,7 +146,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
   },
 
   // ========== 道具 ==========
-  chip: {
+  'prop-chip': {
     assetId: 'prop-chip',
     assetType: AssetType.PROP,
     name: '加密芯片',
@@ -159,7 +159,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
     usageCount: 3456,
     createdAt: new Date(),
   },
-  gun: {
+  'prop-gun': {
     assetId: 'prop-gun',
     assetType: AssetType.PROP,
     name: '智能手枪',
@@ -172,7 +172,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
     usageCount: 1234,
     createdAt: new Date(),
   },
-  holoDisc: {
+  'prop-holo': {
     assetId: 'prop-holo',
     assetType: AssetType.PROP,
     name: '全息投影盘',
@@ -185,7 +185,7 @@ export const DEMO_ASSETS: Record<string, Asset> = {
     usageCount: 567,
     createdAt: new Date(),
   },
-  neuralJack: {
+  'prop-neural': {
     assetId: 'prop-neural',
     assetType: AssetType.PROP,
     name: '神经接口',
@@ -355,11 +355,32 @@ export const STORY_NODES: Record<string, StoryNode> = {
     totalVisits: 3890,
   },
 
+  // 从2C延伸：量子觉醒
+  'node-3c-quantum': {
+    nodeId: 'node-3c-quantum',
+    dramaId: 'demo',
+    parentNodeIds: ['node-2c'],
+    depth: 3,
+    confirmedFrame: {
+      frameCid: 'QmFrame3CQuantum',
+      duration: 5,
+      actorIds: ['actor-k'],
+      sceneId: 'scene-neon-street',
+      propIds: ['prop-chip', 'prop-neural'],
+      script: '芯片与K的神经系统产生了共鸣。数据流如潮水般涌入他的意识——这枚芯片不是被创造的，而是"觉醒"的。它是荒坂AI研究的意外产物：一个有自我意识的量子智能。',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=450&fit=crop',
+    },
+    contributor: '0x9999999999999999999999999999999999999999' as `0x${string}`,
+    timestamp: new Date(),
+    childCount: 2,
+    totalVisits: 1234,
+  },
+
   // ========== 第4幕：高潮 / 分支合流 ==========
   'node-4-climax': {
     nodeId: 'node-4-climax',
     dramaId: 'demo',
-    parentNodeIds: ['node-3a-fight', 'node-3a-escape', 'node-3b-investigate'],
+    parentNodeIds: ['node-3a-fight', 'node-3a-escape', 'node-3b-investigate', 'node-3c-quantum'],
     depth: 4,
     confirmedFrame: {
       frameCid: 'QmFrame4Climax',
@@ -516,6 +537,38 @@ export const CANDIDATE_FRAMES: Record<string, CandidateFrame[]> = {
     },
   ],
 
+  // 第2幕C -> 第3幕的选项（丢弃芯片后的发展）
+  'node-2c': [
+    {
+      candidateId: 'cand-2c-1',
+      frameData: {
+        frameCid: 'QmCand2C1',
+        duration: 5,
+        actorIds: ['actor-k'],
+        sceneId: 'scene-alley',
+        propIds: ['prop-chip'],
+        script: '🔮 芯片似乎有自己的意志。K意识到这不是普通的存储设备，而是某种量子AI。它选择了你。',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=450&fit=crop',
+      },
+      pendingAssets: [],
+      isEditable: false,
+    },
+    {
+      candidateId: 'cand-2c-2',
+      frameData: {
+        frameCid: 'QmCand2C2',
+        duration: 5,
+        actorIds: ['actor-k', 'actor-vega'],
+        sceneId: 'scene-alley',
+        propIds: ['prop-chip', 'prop-gun'],
+        script: '⚠️ 芯片的光芒吸引了注意。Vega的身影出现在巷口："我就知道你丢不掉它。"',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?w=800&h=450&fit=crop',
+      },
+      pendingAssets: [],
+      isEditable: false,
+    },
+  ],
+
   // 第2幕B -> 第3幕的选项
   'node-2b': [
     {
@@ -656,6 +709,38 @@ export const CANDIDATE_FRAMES: Record<string, CandidateFrame[]> = {
     },
   ],
 
+  // 第3幕C -> 第4幕（量子觉醒后的选择）
+  'node-3c-quantum': [
+    {
+      candidateId: 'cand-3c-1',
+      frameData: {
+        frameCid: 'QmCand3C1',
+        duration: 5,
+        actorIds: ['actor-k'],
+        sceneId: 'scene-rooftop',
+        propIds: ['prop-chip'],
+        script: '📡 与芯片中的AI达成共识——它愿意向全世界广播真相，但需要到达城市最高点。',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&h=450&fit=crop',
+      },
+      pendingAssets: [],
+      isEditable: false,
+    },
+    {
+      candidateId: 'cand-3c-2',
+      frameData: {
+        frameCid: 'QmCand3C2',
+        duration: 5,
+        actorIds: ['actor-k', 'actor-glitch'],
+        sceneId: 'scene-cyber-bar',
+        propIds: ['prop-chip', 'prop-neural'],
+        script: '🤝 带着这个觉醒的AI去找Glitch。她是唯一能帮助它"完整化"的人。',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=450&fit=crop',
+      },
+      pendingAssets: [],
+      isEditable: false,
+    },
+  ],
+
   // 第4幕 -> 第5幕（结局选项）
   'node-4-climax': [
     {
@@ -723,6 +808,10 @@ export const CHOICE_TO_NODE: Record<string, string> = {
   'cand-2b-2': 'node-3b-investigate',
   'cand-2b-3': 'node-3b-investigate',
   
+  // 第2幕C选择（丢弃芯片分支）
+  'cand-2c-1': 'node-3c-quantum',
+  'cand-2c-2': 'node-3a-fight',  // 合流到战斗节点
+  
   // 第3幕选择 -> 第4幕
   'cand-3a-fight-1': 'node-4-climax',
   'cand-3a-fight-2': 'node-4-climax',
@@ -730,11 +819,19 @@ export const CHOICE_TO_NODE: Record<string, string> = {
   'cand-3a-escape-2': 'node-4-climax',
   'cand-3b-inv-1': 'node-4-climax',
   'cand-3b-inv-2': 'node-4-climax',
+  'cand-3c-1': 'node-4-climax',
+  'cand-3c-2': 'node-4-climax',
   
   // 第4幕选择 -> 结局
   'cand-4-1': 'node-5-ending',
   'cand-4-2': 'node-5-ending',
   'cand-4-3': 'node-custom',
+  
+  // 默认继续选项（用于自定义节点后）
+  'continue-action': 'node-4-climax',
+  'continue-investigate': 'node-4-climax',
+  'continue-ending': 'node-5-ending',
+  'continue-custom': 'node-custom',
 };
 
 // ============================================================

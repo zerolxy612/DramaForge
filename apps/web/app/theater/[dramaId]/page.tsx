@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { useTheaterStore } from '@/lib/stores/theaterStore';
+import type { StoryNode } from '@/lib/types';
 import { ParticleBackground } from '@/app/components/ParticleBackground';
 import { CinematicIntro } from './components/CinematicIntro';
 import { CinematicPlayer } from './components/CinematicPlayer';
@@ -12,6 +13,7 @@ import { AssetPreview } from './components/AssetPreview';
 import { CustomFrameEditor } from './components/CustomFrameEditor';
 import { DemoEndScreen } from './components/DemoEndScreen';
 import { PointsToast } from './components/PointsToast';
+import { VideoPreview } from './components/VideoPreview';
 
 export default function TheaterPage() {
   const params = useParams();
@@ -35,6 +37,11 @@ export default function TheaterPage() {
   const [showIntro, setShowIntro] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showControls, setShowControls] = useState(false);
+  const [isVideoMinimized, setIsVideoMinimized] = useState(false);
+  
+  // 获取预告片视频URL（只有开场节点有）
+  const trailerVideoUrl = currentNode?.confirmedFrame?.videoUrl;
+  const showTrailer = !!trailerVideoUrl && nodePath.length === 1; // 只在第一幕显示预告片
   
   useEffect(() => {
     if (dramaId === 'demo') {
@@ -250,6 +257,17 @@ export default function TheaterPage() {
                 
                 {/* 右侧：资产面板 */}
                 <aside className="hidden lg:block space-y-6">
+                  {/* 预告视频 - 只在第一幕显示 */}
+                  {showTrailer && !isVideoMinimized && (
+                    <VideoPreview
+                      videoUrl={trailerVideoUrl}
+                      thumbnailUrl={currentNode?.confirmedFrame?.thumbnailUrl}
+                      title="剧集预告"
+                      isMinimized={false}
+                      onToggleMinimize={() => setIsVideoMinimized(true)}
+                    />
+                  )}
+                  
                   <AssetPreview frame={currentNode?.confirmedFrame} />
                   
                   {/* 当前故事线 */}
@@ -258,7 +276,7 @@ export default function TheaterPage() {
                       <span>📍</span> 当前故事线
                     </h3>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {nodePath.map((node, index) => (
+                      {nodePath.map((node: StoryNode, index: number) => (
                         <div 
                           key={node.nodeId}
                           className={`flex items-center gap-2 text-xs ${
@@ -314,6 +332,17 @@ export default function TheaterPage() {
       
       {/* 底部装饰 - 电影院座位暗示 */}
       <div className="fixed bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-black to-transparent pointer-events-none z-20" />
+      
+      {/* 最小化的预告视频悬浮窗 */}
+      {showTrailer && isVideoMinimized && (
+        <VideoPreview
+          videoUrl={trailerVideoUrl}
+          thumbnailUrl={currentNode?.confirmedFrame?.thumbnailUrl}
+          title="剧集预告"
+          isMinimized={true}
+          onToggleMinimize={() => setIsVideoMinimized(false)}
+        />
+      )}
     </div>
   );
 }
