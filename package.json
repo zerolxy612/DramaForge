@@ -3,7 +3,13 @@
   "private": true,
   "packageManager": "pnpm@8.15.4",
   "workspaces": [
-    "apps/web",
-    "contracts"
-  ]
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "pnpm --filter drama-web dev",
+    "build": "pnpm --filter drama-web build",
+    "anchor:build": "anchor build",
+    "anchor:test": "anchor test",
+    "anchor:deploy": "anchor deploy"
+  }
 }

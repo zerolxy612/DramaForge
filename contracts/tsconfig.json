@@ -1,9 +1,0 @@
-{
-  "extends": "./node_modules/@nomicfoundation/hardhat-toolbox/tsconfig.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "resolveJsonModule": true
-  },
-  "include": ["hardhat.config.ts", "scripts", "test", "typechain-types"],
-  "files": ["./hardhat.config.ts"]
-}
