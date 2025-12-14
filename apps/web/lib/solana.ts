@@ -17,15 +17,20 @@ export const RPC_ENDPOINT =
 export const connection = new Connection(RPC_ENDPOINT, "confirmed");
 
 // 程序 ID（部署后需要更新为真实地址）
+// 使用 System Program 作为占位符，部署后替换
+const PLACEHOLDER_PUBKEY = "11111111111111111111111111111111";
+
 export const PROGRAM_IDS = {
-  dramaHub: new PublicKey("DramaHub111111111111111111111111111111111"),
-  storyNode: new PublicKey("StoryNode11111111111111111111111111111111"),
-  assetRegistry: new PublicKey("AssetReg111111111111111111111111111111111"),
-  dramaToken: new PublicKey("DramaToken1111111111111111111111111111111"),
+  dramaHub: new PublicKey(process.env.NEXT_PUBLIC_DRAMA_HUB_PROGRAM_ID || PLACEHOLDER_PUBKEY),
+  storyNode: new PublicKey(process.env.NEXT_PUBLIC_STORY_NODE_PROGRAM_ID || PLACEHOLDER_PUBKEY),
+  assetRegistry: new PublicKey(process.env.NEXT_PUBLIC_ASSET_REGISTRY_PROGRAM_ID || PLACEHOLDER_PUBKEY),
+  dramaToken: new PublicKey(process.env.NEXT_PUBLIC_DRAMA_TOKEN_PROGRAM_ID || PLACEHOLDER_PUBKEY),
 } as const;
 
 // DRAP 代币 Mint 地址（初始化后需要更新）
-export const DRAP_MINT = new PublicKey("DRAPMint11111111111111111111111111111111");
+export const DRAP_MINT = new PublicKey(
+  process.env.NEXT_PUBLIC_DRAP_MINT || PLACEHOLDER_PUBKEY
+);
 
 // 代币小数位数
 export const DRAP_DECIMALS = 6;
