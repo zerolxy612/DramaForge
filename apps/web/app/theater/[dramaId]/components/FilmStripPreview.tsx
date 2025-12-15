@@ -12,6 +12,8 @@ interface FilmStripPreviewProps {
   isChoosing: boolean;
   // 总共几幕
   totalFrames?: number;
+  // 点击插入自定义分镜回调
+  onInsertCustom?: (afterIndex: number) => void;
 }
 
 // 单个胶片帧组件 - 电影胶卷风格
@@ -155,10 +157,10 @@ function FilmFrame({
     </div>
   );
 
-  // 只有激活的帧才有 Popover
+  // 只有激活的帧才有 Popover - 改为向上弹出
   if (isActive) {
     return (
-      <FrameDetailPopover detail={frameDetail} position="bottom">
+      <FrameDetailPopover detail={frameDetail} position="top">
         {frameContent}
       </FrameDetailPopover>
     );
@@ -167,8 +169,16 @@ function FilmFrame({
   return frameContent;
 }
 
-// "下一幕" 占位指示器
-function NextFrameIndicator({ isChoosing }: { isChoosing: boolean }) {
+// "下一幕" 占位指示器 - 支持点击创建自定义
+function NextFrameIndicator({ 
+  isChoosing, 
+  afterIndex,
+  onInsertCustom,
+}: { 
+  isChoosing: boolean;
+  afterIndex: number;
+  onInsertCustom?: (afterIndex: number) => void;
+}) {
   return (
     <div className="relative flex-shrink-0">
       <div className="flex justify-center gap-3 mb-1">
@@ -177,24 +187,33 @@ function NextFrameIndicator({ isChoosing }: { isChoosing: boolean }) {
         ))}
       </div>
       
-      <div className={`
-        relative w-[300px] h-[168px] overflow-hidden
-        border-4 border-dashed transition-all duration-500
-        ${isChoosing 
-          ? 'border-accent/60 bg-accent/5' 
-          : 'border-white/20 bg-white/5'
-        }
-        flex items-center justify-center
-      `}>
+      <button
+        onClick={() => isChoosing && onInsertCustom?.(afterIndex)}
+        disabled={!isChoosing || !onInsertCustom}
+        className={`
+          relative w-[300px] h-[168px] overflow-hidden
+          border-4 border-dashed transition-all duration-500
+          ${isChoosing 
+            ? 'border-accent/60 bg-accent/5 hover:border-accent hover:bg-accent/10 cursor-pointer group' 
+            : 'border-white/20 bg-white/5 cursor-default'
+          }
+          flex items-center justify-center
+        `}
+      >
         {isChoosing ? (
-          <div className="text-center">
+          <div className="text-center flex flex-col items-center">
             <div className="relative mb-2">
-              <div className="w-10 h-10 rounded-full border-2 border-accent/50 flex items-center justify-center">
-                <span className="text-accent text-lg animate-pulse">▶</span>
+              <div className="w-12 h-12 rounded-full border-2 border-accent/50 flex items-center justify-center group-hover:border-accent group-hover:bg-accent/20 transition-all">
+                <span className="text-accent text-2xl font-bold group-hover:scale-110 transition-transform">+</span>
               </div>
-              <div className="absolute inset-0 w-10 h-10 rounded-full border-2 border-accent/30 animate-ping" />
+              <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-accent/30 animate-ping" />
             </div>
-            <span className="text-accent/80 text-xs font-medium">选择中...</span>
+            <span className="text-accent/80 text-xs font-medium group-hover:text-accent transition-colors">
+              点击创建自定义分镜
+            </span>
+            <p className="text-white/40 text-[10px] mt-1">
+              在第 {afterIndex + 1} 幕后
+            </p>
           </div>
         ) : (
           <div className="text-center">
@@ -202,7 +221,7 @@ function NextFrameIndicator({ isChoosing }: { isChoosing: boolean }) {
             <span className="text-white/10 text-[10px]">下一幕</span>
           </div>
         )}
-      </div>
+      </button>
       
       <div className="flex justify-center gap-3 mt-1">
         {[...Array(4)].map((_, i) => (
@@ -216,7 +235,8 @@ function NextFrameIndicator({ isChoosing }: { isChoosing: boolean }) {
 export function FilmStripPreview({ 
   nodePath, 
   isChoosing,
-  totalFrames = 5
+  totalFrames = 5,
+  onInsertCustom,
 }: FilmStripPreviewProps) {
   const [isVisible, setIsVisible] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -329,24 +349,30 @@ export function FilmStripPreview({
                 />
               ))}
               
-              {/* 连接线 */}
+              {/* 连接线 - 对齐到画面区域中心 */}
               {nodePath.length > 0 && (
-                <div className="flex-shrink-0 flex items-center">
-                  <div className={`
-                    w-12 h-0.5 
-                    ${isChoosing 
-                      ? 'bg-gradient-to-r from-white/30 via-accent to-accent animate-pulse' 
-                      : 'bg-white/20'
-                    }
-                  `} />
-                  {isChoosing && (
-                    <div className="w-2 h-2 rounded-full bg-accent animate-ping" />
-                  )}
+                <div className="flex-shrink-0 relative h-[200px] flex items-center">
+                  <div className="absolute top-1/2 -translate-y-1/2 flex items-center">
+                    <div className={`
+                      w-8 h-0.5 
+                      ${isChoosing 
+                        ? 'bg-gradient-to-r from-white/30 via-accent to-accent animate-pulse' 
+                        : 'bg-white/20'
+                      }
+                    `} />
+                    {isChoosing && (
+                      <div className="w-2 h-2 rounded-full bg-accent animate-ping" />
+                    )}
+                  </div>
                 </div>
               )}
               
-              {/* 下一幕指示器 */}
-              <NextFrameIndicator isChoosing={isChoosing} />
+              {/* 下一幕指示器（创建自定义入口） */}
+              <NextFrameIndicator 
+                isChoosing={isChoosing} 
+                afterIndex={nodePath.length - 1}
+                onInsertCustom={onInsertCustom}
+              />
               
               {/* 未来帧占位 */}
               {[...Array(remainingFrames)].map((_, i) => (

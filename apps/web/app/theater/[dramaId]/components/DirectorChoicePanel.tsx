@@ -10,13 +10,15 @@ interface DirectorChoicePanelProps {
   isVisible: boolean;
   remainingFreeRefresh: number;
   onCustomMode: () => void;
+  position?: 'top' | 'bottom';
 }
 
 export function DirectorChoicePanel({ 
   frames, 
   isVisible, 
   remainingFreeRefresh,
-  onCustomMode 
+  onCustomMode,
+  position = 'bottom',
 }: DirectorChoicePanelProps) {
   const { 
     selectedFrame, 
@@ -87,16 +89,30 @@ export function DirectorChoicePanel({
   const circumference = 2 * Math.PI * 20;
   const strokeDashoffset = circumference - (countdown / 15) * circumference;
   
+  const isTop = position === 'top';
+  
   return (
     <div className={`
-      absolute inset-x-0 bottom-0 z-40
+      absolute inset-x-0 z-40
       transition-all duration-500 ease-out
-      ${showPanel ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}
+      ${isTop ? 'top-16' : 'bottom-0'}
+      ${showPanel 
+        ? 'translate-y-0 opacity-100' 
+        : isTop 
+          ? '-translate-y-full opacity-0' 
+          : 'translate-y-full opacity-0'
+      }
     `}>
-      {/* 背景渐变遮罩 - 减少向上扩展 */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/95 to-transparent -top-16" />
+      {/* 背景渐变遮罩 */}
+      <div className={`
+        absolute inset-0
+        ${isTop 
+          ? 'bg-gradient-to-b from-black via-black/95 to-transparent -bottom-16' 
+          : 'bg-gradient-to-t from-black via-black/95 to-transparent -top-16'
+        }
+      `} />
       
-      <div className="relative px-6 pb-6 pt-8">
+      <div className={`relative px-6 ${isTop ? 'pt-4 pb-8' : 'pb-6 pt-8'}`}>
         <div className="max-w-5xl mx-auto">
           {/* 标题区 */}
           <div className="flex items-center justify-between mb-4">

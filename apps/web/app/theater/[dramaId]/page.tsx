@@ -187,28 +187,16 @@ export default function TheaterPage() {
         />
       </div>
       
-      {/* 胶片分镜时间线 - 选择阶段显示 */}
-      {phase === 'choosing' && !isTransitioning && (
-        <div className="absolute left-0 right-0 top-28 z-50 px-0 pointer-events-none">
-          <div className="w-full pointer-events-auto">
-            <FilmStripPreview
-              nodePath={nodePath}
-              isChoosing={true}
-              totalFrames={6}
-            />
-          </div>
-        </div>
-      )}
-      
-      {/* Netflix 风格选择面板 */}
+      {/* 选择面板 - 放在中上方 */}
       <DirectorChoicePanel
         frames={candidateFrames}
         isVisible={phase === 'choosing' && !isTransitioning}
         remainingFreeRefresh={userPoints?.dailyFreeRefresh ?? 10}
         onCustomMode={() => setIsCustomMode(true)}
+        position="top"
       />
       
-      {/* 底部资产抽屉 - 选择时隐藏 */}
+      {/* 底部资产抽屉 - 观看时显示 */}
       <div className={`
         transition-all duration-500
         ${showUI && phase === 'watching' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}
@@ -218,6 +206,25 @@ export default function TheaterPage() {
           isChoosing={phase === 'choosing'}
         />
       </div>
+      
+      {/* 胶片时间轴 - 放在底部 */}
+      {phase === 'choosing' && !isTransitioning && (
+        <div className="absolute left-0 right-0 bottom-0 z-30 pointer-events-none">
+          {/* 底部渐变遮罩 */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/90 to-transparent -top-20" />
+          <div className="relative w-full pointer-events-auto pb-4">
+            <FilmStripPreview
+              nodePath={nodePath}
+              isChoosing={true}
+              totalFrames={6}
+              onInsertCustom={(afterIndex) => {
+                console.log(`在第 ${afterIndex + 1} 幕后插入自定义分镜`);
+                setIsCustomMode(true);
+              }}
+            />
+          </div>
+        </div>
+      )}
       
       {/* 积分变化提示 */}
       {pointsChange && (
