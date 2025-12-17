@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   ConnectionProvider,
@@ -18,6 +18,11 @@ import "@solana/wallet-adapter-react-ui/styles.css";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
+
+  // 初始化日志
+  useEffect(() => {
+    console.log("🚀 DramaForge 应用初始化完成");
+  }, []);
 
   // 配置支持的钱包（Phantom, Solflare）
   const wallets = useMemo(
