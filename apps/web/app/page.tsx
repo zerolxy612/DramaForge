@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ParticleBackground } from "./components/ParticleBackground";
@@ -57,6 +58,11 @@ const chapters = [
 export default function Home() {
   const { language } = useLanguage();
   const content = getLandingContent(language);
+  
+  useEffect(() => {
+    console.log("🎬 首页加载完成");
+  }, []);
+
   return (
     <div className="relative overflow-hidden">
       {/* Background layers */}
