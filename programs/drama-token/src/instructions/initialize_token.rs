@@ -34,6 +34,8 @@ pub struct InitializeToken<'info> {
 }
 
 pub fn handler(ctx: Context<InitializeToken>) -> Result<()> {
+    msg!("Initializing DRAMA Token (DRAP)...");
+    
     let token_config = &mut ctx.accounts.token_config;
 
     require!(!token_config.initialized, TokenError::AlreadyInitialized);
@@ -57,3 +59,4 @@ pub fn handler(ctx: Context<InitializeToken>) -> Result<()> {
 
     Ok(())
 }
+
